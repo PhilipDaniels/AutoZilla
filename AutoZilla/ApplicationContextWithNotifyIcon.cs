@@ -11,7 +11,7 @@ namespace AutoZilla
     class ApplicationContextWithNotifyIcon : ApplicationContext
     {
         NotifyIcon TrayIcon;
-        MainForm MainForm = new MainForm();
+        MainForm TheMainForm = new MainForm();
 
         public ApplicationContextWithNotifyIcon()
         {
@@ -19,7 +19,8 @@ namespace AutoZilla
             {
                 Icon = Resources.AutoZillaTrayIcon,
                 ContextMenu = GetContextMenu(),
-                Visible = true
+                Visible = true,
+                Text = Resources.AppName
             };
 
             TrayIcon.DoubleClick += TrayIcon_DoubleClick;
@@ -29,7 +30,7 @@ namespace AutoZilla
         ContextMenu GetContextMenu()
         {
             var cm = new ContextMenu();
-            cm.MenuItems.Add(new MenuItem("&AutoZilla", MenuShowMainForm));
+            cm.MenuItems.Add(new MenuItem("&" + Resources.AppName, MenuShowMainForm));
             cm.MenuItems.Add(new MenuItem("-"));
             cm.MenuItems.Add(new MenuItem("E&xit", MenuExit));
             
@@ -38,13 +39,13 @@ namespace AutoZilla
 
         void MenuShowMainForm(object sender, EventArgs e)
         {
-            if (MainForm.Visible)
+            if (TheMainForm.Visible)
             {
-                MainForm.Activate();
+                TheMainForm.Activate();
             }
             else
             {
-                MainForm.ShowDialog();
+                TheMainForm.ShowDialog();
             }
         }
 

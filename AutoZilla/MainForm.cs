@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutoZilla.Properties;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,9 +13,13 @@ namespace AutoZilla
 {
     public partial class MainForm : Form
     {
+        PluginManager PluginManager = new PluginManager();
+
         public MainForm()
         {
             InitializeComponent();
+            Text = Resources.AppName;
+            PluginManager.LoadAllPlugins();
         }
     }
 }
