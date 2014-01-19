@@ -1,0 +1,23 @@
+﻿Focus-restoring base form
+Replace variables via an event.
+Vi - need to send a prefix/suffix
+Fxcop
+My misc utils for validation?
+
+Demo plugin, simplest possible?
+WPF plugin?
+
+AutoZillaPlugin base class? NO - provide facilities in classes/interfaces rather
+than subclassing, which is too inflexible.
+
+"Template Loader" based on conventions.
+Main AutoZilla GUI
+  Windows tray icon
+  List of loaded plugins with load/unload functionality
+
+IAutoZillaPlugin - fn to provide list of requested keys with description?
+
+
+;;; # = Windows key          + = Shift key
+;;; ^ = Control key          ! = Alt key          ^! is equivalent to AltGr.
+

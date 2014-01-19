@@ -1,0 +1,92 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Define some variables to hold the filenames of the Xsl transforms -->
+    <ConfigFolder>$(SolutionDir)Config\</ConfigFolder>
+    <TransformTemplate>$(ConfigFolder)Transform.template.xsl</TransformTemplate>
+    <TransformMerged>$(ConfigFolder)Transform.xsl</TransformMerged>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- This group gathers all the individual Xsl transforms for the current configuration -->
+    <InputXslFiles Include="$(ConfigFolder)\Transforms\**\*.$(Configuration).xsl" />
+  </ItemGroup>
+  
+  <!-- This target will run automatically if you include this .targets file in your project file.
+       By default it will only process files named *.template.config in the root of your project.
+       To process all templates in any subdirectory, set TemplatePattern before importing the 
+       .targets file. Example:
+       
+       <PropertyGroup>
+         <TemplatePattern>**\*.template.config</TemplatePattern>
+       </PropertyGroup>  
+       <Import Project="$(SolutionDir)\Config\Config.targets" />
+  -->
+  <Target Name="ProcessTemplates" BeforeTargets="BeforeBuild">
+    <PropertyGroup>
+      <TemplatePattern Condition="$(TemplatePattern) == ''">*.template.config</TemplatePattern>
+    </PropertyGroup>
+    
+    <Message Text="Running ProcessTemplates target to transform $(TemplatePattern) into *.config." />
+    
+    <!-- First amalgamate all the individual transforms into one big Xsl file -->
+    <CreateTransformXsl TransformTemplate="$(TransformTemplate)" TransformMerged="$(TransformMerged)" InputXslFiles="@(InputXslFiles)"
+                        DocumentComment="Built from configuration '$(Configuration)' on machine $(ComputerName) by $(UserName) at $([System.DateTime]::Now)"
+                        />
+
+    <ItemGroup>
+      <!-- This is the set of all template files that the transforms will be applied to -->
+      <Templates Include="$(TemplatePattern)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <!-- Augment the group with the final filenames -->
+      <Templates>
+        <FinalFile>$([System.String]::Copy('%(FullPath)').Replace('.template.', '.'))</FinalFile>
+      </Templates>
+    </ItemGroup>
+
+    <Message Text="Transforming file %(Templates.FullPath) into %(Templates.FinalFile)" />
+
+    <!-- Now apply the Xsl to every template file. The % is the magic that makes batching occur -->
+    <XslTransformation XmlInputPaths="%(Templates.FullPath)"
+                   XslInputPath="$(TransformMerged)"
+                   OutputPaths="%(Templates.FinalFile)" />
+  </Target>
+
+  
+  
+  <UsingTask TaskName="CreateTransformXsl" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+    <!-- This task amalgamates all the individual xsl sheets into one big sheet -->
+    <ParameterGroup>
+      <TransformTemplate ParameterType="System.String" Required="true" />
+      <TransformMerged ParameterType="System.String" Required="true" />
+      <InputXslFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <DocumentComment ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System"/>
+      <Using Namespace="System.IO"/>
+      <Using Namespace="System.Text"/>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            Log.LogMessage("CreateTransformXsl: Creating " + TransformMerged + " from " + TransformTemplate, MessageImportance.Normal);
+            string inputFile = File.ReadAllText(TransformTemplate);
+            var sb = new StringBuilder();
+            foreach (var file in InputXslFiles)
+            {
+              var path = file.GetMetadata("FullPath");
+              path = path.Replace("\\", "/");
+              sb.AppendFormat("  <xsl:include href=\"{0}\" />", path);
+              sb.AppendLine();
+            }
+            inputFile = inputFile.Replace("<!-- @@Includes -->", sb.ToString());
+            inputFile = inputFile.Replace("@@Comment", DocumentComment);
+            File.WriteAllText(TransformMerged, inputFile);
+            return true;
+  ]]>
+      </Code>
+    </Task>
+
+  </UsingTask>
+  
+</Project>
