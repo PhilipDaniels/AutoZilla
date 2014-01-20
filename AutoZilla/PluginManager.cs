@@ -29,7 +29,16 @@ namespace AutoZilla
             InitialisePlugins();
         }
 
-
+        /// <summary>
+        /// The name of the folder from which plugins will be loaded.
+        /// </summary>
+        public string PluginPath
+        {
+            get
+            {
+                return Path.Combine(Application.StartupPath, "Plugins");
+            }
+        }
 
         void InitialisePlugins()
         {

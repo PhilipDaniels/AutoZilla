@@ -105,7 +105,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="GlobalHotkeys\readme.txt" />
-    <Content Include="todo.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Config\Config.csproj">

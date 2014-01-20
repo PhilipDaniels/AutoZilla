@@ -19,6 +19,7 @@ namespace AutoZilla
         {
             InitializeComponent();
             Text = Resources.AppName;
+            txtPluginPath.Text = PluginManager.PluginPath;
             PluginManager.LoadAllPlugins();
         }
     }
