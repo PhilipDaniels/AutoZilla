@@ -9,7 +9,7 @@ namespace AutoZilla.Core
     /// </summary>
     internal class HotkeyPressedEventArgs : EventArgs
     {
-        public readonly ModifiedKey HotkeyInfo;
+        public ModifiedKey HotkeyInfo { get; private set; }
 
         public HotkeyPressedEventArgs(ModifiedKey hotkeyInfo)
         {

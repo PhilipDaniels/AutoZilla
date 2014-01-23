@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutoZilla.Core.Validation;
+using System;
 using System.Windows.Forms;
 
 namespace AutoZilla.Core.GlobalHotkeys
@@ -8,7 +9,7 @@ namespace AutoZilla.Core.GlobalHotkeys
         public Modifiers Modifier { get; private set; }
         public int Key { get; private set; }
         public int Id { get; private set; }
-        public readonly HotkeyCallback Callback;
+        public HotkeyCallback Callback { get; private set; }
 
         readonly IntPtr hWnd;
         bool registered;
@@ -23,10 +24,8 @@ namespace AutoZilla.Core.GlobalHotkeys
         /// <param name="registerImmediately"> </param>
         public GlobalHotkey(Modifiers modifier, Keys key, IWin32Window window, HotkeyCallback callback, bool registerImmediately = false)
         {
-            if (window == null)
-                throw new ArgumentNullException("window", "You must provide a form or window to register the hotkey against.");
-            if (callback == null)
-                throw new ArgumentNullException("callback", "You must specify a callback in order to do some useful work when your hotkey is pressed.");
+            window.ThrowIfNull("window", "You must provide a form or window to register the hotkey against.");
+            callback.ThrowIfNull("callback", "You must specify a callback in order to do some useful work when your hotkey is pressed.");
 
             Modifier = modifier;
             Key = (int)key;

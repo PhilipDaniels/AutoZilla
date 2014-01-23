@@ -27,6 +27,7 @@ which shows the minimum needed to register a hotkey and run a callback.
 **AutoZilla.Plugins.MSSQL** is a full-featured plugin for auto-typing MS SQL
 related text.
 
+
 A note on Building
 ==================
 Building is non-standard in this project.
@@ -41,14 +42,15 @@ TODO
 - [ ] Templates: lots more built-in variables, see the issue in Github.
 - [ ] Templates: "emplatize" refactor
 - [ ] Templates: How to have a button on a form do the same thing as running a template?
-- [ ] TemplateLoader class: load from known "Templates" subfolder. Use meta-data in first line: ;;AZ;; CSA-L; BLahalalalalla
+- [X] TemplateLoader class: load from known "Templates" subfolder. Use meta-data in first line: ;;AZ;; CSA-L; BLahalalalalla
 - [ ] Vi: need to send a prefix? Doesn't work with paste either.
 - [ ] Tooling: setup FxCop for the project.
 - [ ] Main GUI: Pick one hotkey to display the form?
 - [ ] Main GUI: get decent icons in 16x16 for the tray, larger for the toolbar
 - [ ] Main GUI: create a log4net appender for the debug tab
 - [ ] Main GUI: provide ability to load & unload keys & plugins, and block particular ones.
+- [ ] Main GUI: provide a setting to hide the Debug tab.
 - [ ] Demos: Create a demo (simplest possible) plugin?
 - [ ] Demos: Create a demo WPF project?
 - [ ] Core: Create a FocusRestoringFormBase
-
+- [ ] Core: How do we handle versions - 0.1 etc.

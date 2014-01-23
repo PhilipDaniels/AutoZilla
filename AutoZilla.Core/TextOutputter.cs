@@ -22,9 +22,9 @@ namespace AutoZilla.Core
     /// </summary>
     public class TextOutputter
     {
-        public readonly int InterOutputSleepMilliseconds;
-        public readonly int ModifierWaitSleepMilliseconds;
-        public readonly IInputSimulator Sim;
+        public int InterOutputSleepMilliseconds { get; private set; }
+        public int ModifierWaitSleepMilliseconds { get; private set; }
+        public IInputSimulator Sim { get; private set; }
 
         public TextOutputter()
             : this(50, 50)

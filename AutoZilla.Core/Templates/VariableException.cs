@@ -12,7 +12,7 @@ namespace AutoZilla.Core.Templates
     [Serializable]
     public class VariableException : Exception
     {
-        public readonly string VariableSpecification;
+        public string VariableSpecification { get; private set; }
 
         public VariableException()
         { 

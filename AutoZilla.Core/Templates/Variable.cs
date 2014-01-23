@@ -1,4 +1,5 @@
 ﻿using AutoZilla.Core.Extensions;
+using AutoZilla.Core.Validation;
 using System;
 using System.Diagnostics;
 
@@ -44,8 +45,7 @@ namespace AutoZilla.Core.Templates
         /// <param name="specification">String rep of the variable.</param>
         public Variable(string specification)
         {
-            if (specification == null)
-                throw new ArgumentNullException("specification");
+            specification.ThrowIfNull("specification");
 
             // Trim off leading "${" and trailing "}".
             if (specification.StartsWith("${") && specification.EndsWith("}"))
@@ -53,8 +53,7 @@ namespace AutoZilla.Core.Templates
             else
                 Specification = specification;
 
-            if (String.IsNullOrWhiteSpace(specification))
-                throw new ArgumentOutOfRangeException("Variable specification cannot be empty or whitespace.");
+            specification.ThrowIfNullOrWhiteSpace("specification");
             
             string name, width, pattern;
             GetComponents(Specification, out name, out width, out pattern);

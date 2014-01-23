@@ -111,6 +111,9 @@
             // 
             this.dgvPlugins.AllowUserToAddRows = false;
             this.dgvPlugins.AllowUserToDeleteRows = false;
+            this.dgvPlugins.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvPlugins.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvPlugins.Location = new System.Drawing.Point(6, 36);
             this.dgvPlugins.Name = "dgvPlugins";

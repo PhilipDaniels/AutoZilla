@@ -1,4 +1,5 @@
 ﻿using AutoZilla.Core.Templates;
+using AutoZilla.Core.Validation;
 using System;
 using System.Collections.Generic;
 
@@ -21,11 +22,10 @@ namespace AutoZilla.Core.Extensions
 
         public static string Templatize(this string text, IDictionary<string, object> variableValues)
         {
-            if (text == null)
-                throw new ArgumentNullException("text");
+            text.ThrowIfNull("text");
 
-            var template = new Template(text, variableValues);
-            return template.ReplacedText;
+            var template = new Template(text);
+            return template.Process(variableValues);
         }
 
         public static string PadAndAlign(this string text, int width)
@@ -45,23 +45,9 @@ namespace AutoZilla.Core.Extensions
 
         public static string PadAndAlign(this string text, int minWidth, int maxWidth, Alignment alignment, char paddingChar)
         {
-            if (minWidth < 0)
-            {
-                var msg = String.Format("minWidth must be at least 0, but {0} specified", minWidth);
-                throw new ArgumentOutOfRangeException(msg);
-            }
-
-            if (maxWidth < 0)
-            {
-                var msg = String.Format("maxWidth must be at least 0, but {0} specified", maxWidth);
-                throw new ArgumentOutOfRangeException(msg);
-            }
-
-            if (minWidth > maxWidth) 
-            {
-                var msg = String.Format("minWidth of {0} is more than the maxWidth of {1}", minWidth, maxWidth);
-                throw new ArgumentOutOfRangeException(msg);
-            }
+            minWidth.ThrowIfLessThan(0, "minWidth");
+            maxWidth.ThrowIfLessThan(0, "maxWidth");
+            minWidth.ThrowIfMoreThan(maxWidth, "minWidth", "minWidth must be less than or equal to the maxWidth.");
 
             if (text == null)
                 text = "";

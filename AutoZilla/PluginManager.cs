@@ -1,4 +1,5 @@
 ﻿using AutoZilla.Core;
+using AutoZilla.Core.Templates;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,17 +30,6 @@ namespace AutoZilla
             InitialisePlugins();
         }
 
-        /// <summary>
-        /// The name of the folder from which plugins will be loaded.
-        /// </summary>
-        public string PluginPath
-        {
-            get
-            {
-                return Path.Combine(Application.StartupPath, "Plugins");
-            }
-        }
-
         void InitialisePlugins()
         {
             foreach (var plugin in Plugins)
@@ -50,9 +40,7 @@ namespace AutoZilla
 
         IEnumerable<IAutoZillaPlugin> LoadPlugins()
         {
-            string path = Application.StartupPath;
-            path = Path.Combine(path, "Plugins");
-            string[] pluginFiles = Directory.GetFiles(path, "*.dll");
+            string[] pluginFiles = Directory.GetFiles(AutoZillaVariables.PluginsFolder, "*.dll", SearchOption.AllDirectories);
 
             var plugins =
                 (

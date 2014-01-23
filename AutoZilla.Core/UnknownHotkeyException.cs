@@ -13,8 +13,8 @@ namespace AutoZilla.Core
     [Serializable]
     public class UnknownHotkeyException : Exception
     {
-        public readonly Modifiers Modifiers;
-        public readonly Keys Key;
+        public Modifiers Modifiers { get; private set; }
+        public Keys Key { get; private set; }
 
         public UnknownHotkeyException()
         { 

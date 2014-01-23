@@ -1,6 +1,9 @@
 ﻿using AutoZilla.Core.Extensions;
+using AutoZilla.Core.GlobalHotkeys;
+using AutoZilla.Core.Validation;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -21,22 +24,104 @@ namespace AutoZilla.Core.Templates
             RegexOptions.Multiline | RegexOptions.Compiled);
 
         /// <summary>
-        /// The original text of the template, before any variable replacement is done.
+        /// The key that the template is bound to, that is, pressing this
+        /// key should invoke the template. It can be null.
         /// </summary>
-        public readonly string OriginalText;
+        public ModifiedKey Key { get; private set; }
 
         /// <summary>
-        /// The text of the template after variable replacement.
+        /// Description of the template. Intended to be human-readable
+        /// text suitable for presenting in the AutoZilla GUI.
         /// </summary>
-        public readonly string ReplacedText;
+        public string Description { get; private set; }
+
+        /// <summary>
+        /// The path that this template was loaded from. Will be null
+        /// for templates that are created in memory.
+        /// </summary>
+        public string FilePath { get; private set; }
+
+        /// <summary>
+        /// Returns the filename (without the full path) that this
+        /// template was loaded from. Will be null for templates that
+        /// are created in memory.
+        /// </summary>
+        public string Filename
+        {
+            get
+            {
+                if (FilePath == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return Path.GetFileName(FilePath);
+                }
+            }
+        }
+
+        /// <summary>
+        /// The original text of the template, before any variable replacement is done.
+        /// </summary>
+        public string OriginalText { get; private set; }
 
         /// <summary>
         /// The set of variable values that you passed in when you constructed
         /// the template. These values will be substituted into the appropriate
         /// places in the template.
         /// </summary>
-        public readonly IDictionary<string, object> VariableValues;
-        
+        IDictionary<string, object> VariableValues { get; set; }
+
+        public Template(string originalText)
+            : this(null, null, null, originalText)
+        {
+        }
+
+        public Template(ModifiedKey key, string originalText)
+            : this(key, null, null, originalText)
+        {
+        }
+
+        public Template(ModifiedKey key, string description, string filePath, string originalText)
+        {
+            originalText.ThrowIfNull("originalText", "You must specify the text for the template.");
+
+            Key = key;
+            Description = description;
+            FilePath = filePath;
+            OriginalText = originalText;
+        }
+
+        public string Process()
+        {
+            return Process(null, false);
+        }
+
+        public string Process(IDictionary<string, object> variableValues)
+        {
+            return Process(variableValues, false);
+        }
+
+        public string Process(IDictionary<string, object> variableValues, bool trimOneLeadingNewLine)
+        {
+            string text = OriginalText;
+            if (trimOneLeadingNewLine)
+                text = text.TrimOneLeadingNewLine();
+
+            VariableValues = variableValues;
+
+            // Find all variable markers of the form ${VAR} and replace them with the appropriate data.
+            string replacedText = TemplateVariableRegex.Replace(text, m => VariableReplacer(m));
+            return replacedText;
+        }
+
+        /*
+        /// <summary>
+        /// The text of the template after variable replacement.
+        /// </summary>
+        public string ReplacedText { get; private set; }
+
         /// <summary>
         /// Construct a new template from the specified text. No user
         /// variables are specified.
@@ -69,6 +154,7 @@ namespace AutoZilla.Core.Templates
             // Find all variable markers of the form ${VAR} and replace them with the appropriate data.
             ReplacedText = TemplateVariableRegex.Replace(text, m => VariableReplacer(m));
         }
+        */
 
         string VariableReplacer(Match match)
         {

@@ -1,4 +1,5 @@
-﻿using AutoZilla.Properties;
+﻿using AutoZilla.Core.Templates;
+using AutoZilla.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,7 +20,7 @@ namespace AutoZilla
         {
             InitializeComponent();
             Text = Resources.AppName;
-            txtPluginPath.Text = PluginManager.PluginPath;
+            txtPluginPath.Text = AutoZillaVariables.PluginsFolder;
             PluginManager.LoadAllPlugins();
         }
     }

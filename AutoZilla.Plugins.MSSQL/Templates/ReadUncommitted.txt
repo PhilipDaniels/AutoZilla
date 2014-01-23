@@ -1,0 +1,2 @@
+﻿;;AZ;; Inserts "set transaction isolation level read uncommitted"
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
