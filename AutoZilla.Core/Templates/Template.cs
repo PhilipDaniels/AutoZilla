@@ -122,45 +122,6 @@ namespace AutoZilla.Core.Templates
             return replacedText;
         }
 
-        /*
-        /// <summary>
-        /// The text of the template after variable replacement.
-        /// </summary>
-        public string ReplacedText { get; private set; }
-
-        /// <summary>
-        /// Construct a new template from the specified text. No user
-        /// variables are specified.
-        /// </summary>
-        /// <param name="text">The text of the template.</param>
-        public Template(string text)
-            : this(text, null)
-        {
-        }
-
-        // TODO: Allow dynamic? Only .Net 4.
-        /// <summary>
-        /// Construct a new template from the specified text. Values for user variables
-        /// can be specified using a dictionary (which can be null or empty or partially
-        /// populated).
-        /// </summary>
-        /// <param name="text">The text of the template.</param>
-        /// <param name="variableValues">Dictionary in which the key of an entry is the name of a variable
-        /// and the value of an entry is the value to be used by the formatter.</param>
-        public Template(string text, IDictionary<string, object> variableValues)
-        {
-            if (text == null)
-                throw new ArgumentNullException("text");
-
-            text = text.TrimOneLeadingNewLine();
-
-            OriginalText = text;
-            VariableValues = variableValues;
-
-            // Find all variable markers of the form ${VAR} and replace them with the appropriate data.
-            ReplacedText = TemplateVariableRegex.Replace(text, m => VariableReplacer(m));
-        }
-        */
 
         string VariableReplacer(Match match)
         {
@@ -186,28 +147,7 @@ namespace AutoZilla.Core.Templates
 
 
             // Deal with all built in variables.
-            switch (variable.Name)
-            {
-                case "DOMAIN":
-                    thing = System.Security.Principal.WindowsIdentity.GetCurrent().Name.Before(@"\");
-                    break;
-                case "USER":
-                    thing = System.Security.Principal.WindowsIdentity.GetCurrent().Name.After(@"\");
-                    break;
-                case "DOMAINUSER":
-                    thing = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-                    break;
-                case "DATE":
-                    thing = DateTime.Now;
-                    break;
-                case "MACHINE":
-                    thing = Environment.MachineName;
-                    break;
-                default:
-                    throw new Exception("Unknown internal variable: " + variable.Name);
-            }
-
-            return thing;
+            return AutoZillaVariables.GetByName(variable.Name);
         }
     }
 }
