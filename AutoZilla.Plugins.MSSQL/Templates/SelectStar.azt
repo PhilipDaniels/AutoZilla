@@ -1,0 +1,7 @@
+﻿[Config]
+Key: CA-F
+Name: SELECT * FROM
+Description: Inserts "SELECT * FROM "
+  
+;;AZ;; 
+SELECT * FROM 

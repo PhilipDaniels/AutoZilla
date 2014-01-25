@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -140,6 +141,32 @@ namespace AutoZilla.Core.Validation
             }
 
             return parameter;
+        }
+
+        public static string ThrowIfDirectoryDoesNotExist([ValidatedNotNull] this string path, string paramName)
+        {
+            path.ThrowIfNullOrWhiteSpace(paramName, "path must be specified.");
+
+            if (!Directory.Exists(path))
+            {
+                string msg = String.Format("The directory {0} does not exist.", path);
+                throw new DirectoryNotFoundException(msg);
+            }
+
+            return path;
+        }
+
+        public static string ThrowIfFileDoesNotExist([ValidatedNotNull] this string path, string paramName)
+        {
+            path.ThrowIfNullOrWhiteSpace(paramName, "path must be specified.");
+
+            if (!File.Exists(path))
+            {
+                string msg = String.Format("The file {0} does not exist.", path);
+                throw new FileNotFoundException(msg, path);
+            }
+
+            return path;
         }
     }
 }

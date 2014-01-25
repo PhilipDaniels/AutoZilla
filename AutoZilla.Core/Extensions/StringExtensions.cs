@@ -15,19 +15,6 @@ namespace AutoZilla.Core.Extensions
                 return text;
         }
 
-        public static string Templatize(this string text)
-        {
-            return Templatize(text, null);
-        }
-
-        public static string Templatize(this string text, IDictionary<string, object> variableValues)
-        {
-            text.ThrowIfNull("text");
-
-            var template = new Template(text);
-            return template.Process(variableValues);
-        }
-
         public static string PadAndAlign(this string text, int width)
         {
             return PadAndAlign(text, width, width, Alignment.Left, ' ');
@@ -94,6 +81,60 @@ namespace AutoZilla.Core.Extensions
             }
 
             return text;
+        }
+
+        public static string Before(this string s, string value)
+        {
+            return s.Before(value, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public static string Before(this string s, string value, StringComparison comparisonType)
+        {
+            value.ThrowIfNull("value", "You cannot search for a null value.");
+
+            if (s == null)
+                return null;
+            int index = s.IndexOf(value, comparisonType);
+            if (index == -1)
+                return null;
+            else
+                return s.Substring(0, index);
+        }
+
+        public static string After(this string s, string value)
+        {
+            return s.After(value, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public static string After(this string s, string value, StringComparison comparisonType)
+        {
+            value.ThrowIfNull("value", "You cannot search for a null value.");
+
+            if (s == null)
+                return null;
+            int index = s.IndexOf(value, comparisonType);
+            if (index == -1)
+                return null;
+            else
+                return s.Substring(index + value.Length);
+        }
+
+        public static void BeforeAndAfter(this string s, string value, out string before, out string after)
+        {
+            s.BeforeAndAfter(value, StringComparison.InvariantCultureIgnoreCase, out before, out after);
+        }
+
+        public static void BeforeAndAfter(this string s, string value, StringComparison comparisonType, out string before, out string after)
+        {
+            value.ThrowIfNull("value", "You cannot search for a null value.");
+
+            before = s.Before(value, comparisonType);
+            after = s.After(value, comparisonType);
+        }
+
+        public static bool Contains(this string s, string value, StringComparison comparisonType)
+        {
+            return s.IndexOf(value, comparisonType) != -1;
         }
     }
 }

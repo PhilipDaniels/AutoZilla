@@ -1,0 +1,7 @@
+﻿[Config]
+Key: CA-U
+Name: set tran iso read unc
+Description: Inserts "set transaction isolation level read uncommitted"
+  
+;;AZ;; 
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;

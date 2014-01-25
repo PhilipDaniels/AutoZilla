@@ -1,25 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AutoZilla.Core.Extensions;
 using AutoZilla.Core.GlobalHotkeys;
 using AutoZilla.Core.Validation;
+using Nini.Config;
+using Nini.Ini;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace AutoZilla.Core.Templates
 {
     /// <summary>
-    /// Provides methods to load templates from files.
-    /// The convention is that the templates for your plugin will be
-    /// in the folder <code>YourPluginNameTemplates</code>. This class
-    /// is designed to load templates that have assigned hot-keys and
-    /// descriptions.
+    /// Provides methods to load templates from files or string. This class
+    /// expects the templates to have a [Config] section. If you just want
+    /// to load a raw template, use the constructors on the <code>Template</code>
+    /// class itself.
     /// </summary>
     public static class TemplateLoader
     {
-        static readonly string AUTOZILLA_PREFIX = ";;AZ;;";
+        static readonly string AUTOZILLA_SEPARATOR = ";;AZ;;";
+        static readonly string AUTOZILLA_TEMPLATE_EXTENSION = "azt";
+
         static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
@@ -43,77 +45,106 @@ namespace AutoZilla.Core.Templates
         }
 
         /// <summary>
-        /// Initialises a new <code>TemplateLoader</code> and loads all
-        /// the templates in <paramref name="templateFolder"/>.
+        /// Loads all the templates in <paramref name="templateFolder"/>.
         /// </summary>
         /// <param name="templateFolder">The folder to load templates from.</param>
         public static IEnumerable<Template> LoadTemplates(string templateFolder)
         {
-            templateFolder.ThrowIfNullOrWhiteSpace("templateFolder");
-            if (!Directory.Exists(templateFolder))
-                throw new ArgumentOutOfRangeException("templateFolder", "templateFolder does not exist.");
+            templateFolder.ThrowIfDirectoryDoesNotExist("templateFolder");
 
-            string[] templateFiles = Directory.GetFiles(templateFolder, "*.txt");
-            var templates = new List<Template>();
-            foreach (var f in templateFiles)
-            {
-                templates.Add(LoadTemplate(f));
-            }
+            string[] templateFiles = Directory.GetFiles(templateFolder, "*." + AUTOZILLA_TEMPLATE_EXTENSION);
 
-            return templates;
+            // ToList() to force eval at this point. If there are errors
+            // the earlier we see them the better.
+            return (from f in templateFiles
+                    let t = LoadTemplate(f)
+                    select t).ToList();
         }
 
+        /// <summary>
+        /// Load an individual template.
+        /// </summary>
+        /// <param name="templateFilePath">Full path to the template.</param>
+        /// <returns>Template object.</returns>
         public static Template LoadTemplate(string templateFilePath)
         {
+            templateFilePath.ThrowIfFileDoesNotExist("templateFilePath");
+
+            string contents = File.ReadAllText(templateFilePath);
+            return InternalLoadTemplateFromString(templateFilePath, contents);
+        }
+
+        /// <summary>
+        /// Loads a template from a string.
+        /// </summary>
+        /// <param name="template">The template.</param>
+        /// <returns>Template object.</returns>
+        public static Template LoadTemplateFromString(string template)
+        {
+            template.ThrowIfNullOrWhiteSpace("template");
+
+            return InternalLoadTemplateFromString(null, template);
+        }
+
+        static Template InternalLoadTemplateFromString(string templateFilePath, string template)
+        {
+            template.ThrowIfNullOrWhiteSpace("template");
+
             try
             {
-                string contents = File.ReadAllText(templateFilePath).TrimStart();
-                if (!contents.StartsWith(AUTOZILLA_PREFIX, StringComparison.InvariantCultureIgnoreCase))
+                string configAsString, templateBody;
+                template.BeforeAndAfter(AUTOZILLA_SEPARATOR, StringComparison.InvariantCultureIgnoreCase, out configAsString, out templateBody);
+
+                if (String.IsNullOrWhiteSpace(configAsString))
                 {
-                    log.DebugFormat
+                    string msg = String.Format
                         (
-                        "The template at {0} does not contain an AutoZilla prefix of {1} on its first line - ignoring.",
-                        templateFilePath, AUTOZILLA_PREFIX
+                        "The template{0}{1} has an invalid format. No config section was found. " +
+                        "Check for the AutoZilla separator '{2}'.",
+                        templateFilePath == null ? "" : " ",
+                        templateFilePath ?? "", 
+                        AUTOZILLA_SEPARATOR
                         );
-                    return null;
+                    throw new TemplateFormatException(msg, template);
                 }
 
-                string[] parts = contents.Split(new string[] { Environment.NewLine }, 2, StringSplitOptions.None);
-                if (parts.Length != 2)
+                if (String.IsNullOrWhiteSpace(templateBody))
                 {
-                    string msg = String.Format("The template file {0} has an invalid format. No body was found.", templateFilePath);
-                    throw new Exception(msg);
+                    string msg = String.Format
+                        (
+                        "The template{0}{1} has an invalid format. No template body was found. " +
+                        "Check for the AutoZilla separator '{2}'.",
+                        templateFilePath == null ? "" : " ",
+                        templateFilePath ?? "", 
+                        AUTOZILLA_SEPARATOR
+                        );
+                    throw new TemplateFormatException(msg, template);
                 }
 
-                string templateBody = parts[1];
-                string metaDataLine = parts[0].Remove(0, AUTOZILLA_PREFIX.Length).Trim();
 
-                // If a semi-colon appears we expect "CSAW-Key; Description."
-                // if one does not appear then assume we just have a description.
-                string hotkey;
-                string description;
+                var config = ParseTemplateConfig(templateFilePath, configAsString);
+                templateBody = templateBody.TrimOneLeadingNewLine();
 
-                int indexOfSemi = metaDataLine.IndexOf(';');
-                if (indexOfSemi == -1)
-                {
-                    hotkey = null;
-                    description = metaDataLine.Trim();
-                }
-                else if (metaDataLine[indexOfSemi - 1] == '-' && metaDataLine[indexOfSemi + 1] == ';')
-                {
-                    // User wants to setup a hotkey for ';' i.e. we have CSA-;;
-                    hotkey = metaDataLine.Substring(0, indexOfSemi +1);
-                    description = metaDataLine.Substring(indexOfSemi + 2).Trim();
-                }
-                else
-                {
-                    // User wants to setup a hotkey for something else. CSA-K;
-                    hotkey = metaDataLine.Substring(0, indexOfSemi);
-                    description = metaDataLine.Substring(indexOfSemi + 1).Trim();
-                }
+                var t = new Template(config.Key, config.Name, config.Description, templateFilePath, templateBody);
+                return t;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error while loading template.", ex);
+                throw new TemplateFormatException("Error while loading template.", template, ex);
+            }
+        }
 
-                if (String.IsNullOrWhiteSpace(description))
-                    description = Path.GetFileName(templateFilePath);
+        static TemplateConfig ParseTemplateConfig(string templateFilePath, string azConfig)
+        {
+            using (var rdr = new StringReader(azConfig))
+            {
+                var doc = new IniDocument(rdr, IniFileType.PythonStyle);
+                var source = new IniConfigSource(doc);
+                var config = source.Configs["Config"];
+                source.CaseSensitive = false;
+
+                string hotkey = config.Get("Key");
 
                 ModifiedKey modifiedKey = null;
                 if (!String.IsNullOrWhiteSpace(hotkey))
@@ -125,14 +156,36 @@ namespace AutoZilla.Core.Templates
                     }
                 }
 
-                var t = new Template(modifiedKey, description, templateFilePath, templateBody);
-                return t;
+                var result = new TemplateConfig();
+                result.Key = modifiedKey;
+                result.Name = config.Get("Name");
+                result.Description = config.Get("Description");
+
+                return result;
             }
-            catch (Exception ex)
-            {
-                log.Error("Error while loading template file " + templateFilePath + " - ignoring.", ex);
-                return null;
-            }
+        }
+
+        /// <summary>
+        /// Template configuration information as read from the template file.
+        /// </summary>
+        class TemplateConfig
+        {
+            /// <summary>
+            /// The key that the template is bound to, that is, pressing this
+            /// key should invoke the template. It can be null.
+            /// </summary>
+            public ModifiedKey Key { get; set; }
+
+            /// <summary>
+            /// Short name of the template.
+            /// </summary>
+            public string Name { get; set; }
+
+            /// <summary>
+            /// Description of the template. Intended to be human-readable
+            /// text suitable for presenting in the AutoZilla GUI.
+            /// </summary>
+            public string Description { get; set; }
         }
     }
 }

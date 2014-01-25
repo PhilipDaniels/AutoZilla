@@ -50,8 +50,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Extensions\BeforeAndAfterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\PadAndAlignTests.cs" />
+    <Compile Include="Templates\TemplateLoaderTests.cs" />
     <Compile Include="Templates\VariableTests.cs" />
     <Compile Include="Templates\WidthSpecificationTests.cs" />
   </ItemGroup>

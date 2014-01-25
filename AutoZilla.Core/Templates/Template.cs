@@ -30,10 +30,15 @@ namespace AutoZilla.Core.Templates
         public ModifiedKey Key { get; private set; }
 
         /// <summary>
+        /// Short name of the template.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         /// Description of the template. Intended to be human-readable
         /// text suitable for presenting in the AutoZilla GUI.
         /// </summary>
-        public string Description { get; private set; }
+        public string Description { get; set; }
 
         /// <summary>
         /// The path that this template was loaded from. Will be null
@@ -74,20 +79,21 @@ namespace AutoZilla.Core.Templates
         IDictionary<string, object> VariableValues { get; set; }
 
         public Template(string originalText)
-            : this(null, null, null, originalText)
+            : this(null, null, null, null, originalText)
         {
         }
 
         public Template(ModifiedKey key, string originalText)
-            : this(key, null, null, originalText)
+            : this(key, null, null, null, originalText)
         {
         }
 
-        public Template(ModifiedKey key, string description, string filePath, string originalText)
+        public Template(ModifiedKey key, string name, string description, string filePath, string originalText)
         {
             originalText.ThrowIfNull("originalText", "You must specify the text for the template.");
 
             Key = key;
+            Name = name;
             Description = description;
             FilePath = filePath;
             OriginalText = originalText;
@@ -176,10 +182,19 @@ namespace AutoZilla.Core.Templates
                 return thing;
             }
 
+            // TODO: Raise an event here.
+
+
             // Deal with all built in variables.
             switch (variable.Name)
             {
+                case "DOMAIN":
+                    thing = System.Security.Principal.WindowsIdentity.GetCurrent().Name.Before(@"\");
+                    break;
                 case "USER":
+                    thing = System.Security.Principal.WindowsIdentity.GetCurrent().Name.After(@"\");
+                    break;
+                case "DOMAINUSER":
                     thing = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
                     break;
                 case "DATE":

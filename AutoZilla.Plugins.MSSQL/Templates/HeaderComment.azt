@@ -1,0 +1,15 @@
+﻿[Config]
+Key: CA-C
+Name: SQL Comment header
+Description: Inserts a comment header including date and name of the current user.
+
+;;AZ;;
+/* Summary
+ * 
+ * 
+ * Example Usage
+ * EXEC 
+ *
+ * Date       Author              Description
+ * ${DATE:dd-MM-yyyy} ${DOMAINUSER!20}Initial version.
+ */

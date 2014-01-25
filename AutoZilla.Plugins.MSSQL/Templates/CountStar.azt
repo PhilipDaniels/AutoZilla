@@ -1,0 +1,7 @@
+﻿[Config]
+Key: CA-D
+Name: SELECT COUNT(*)
+Description: Inserts "SELECT COUNT(*) FROM "
+  
+;;AZ;; 
+SELECT COUNT(*) FROM 

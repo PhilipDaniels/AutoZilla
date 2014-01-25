@@ -1,6 +1,9 @@
 ﻿using AutoZilla.Core.GlobalHotkeys;
+using AutoZilla.Core.Templates;
+using AutoZilla.Core.Validation;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace AutoZilla.Core
@@ -14,10 +17,15 @@ namespace AutoZilla.Core
         static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         MessageLoopForm MessageLoopForm;
         List<GlobalHotkey> HotKeys;
+        List<Template> AutoTemplates;
+        TextOutputter TOUT;
 
         public GlobalHotkeyManager()
         {
             HotKeys = new List<GlobalHotkey>();
+            AutoTemplates = new List<Template>();
+            TOUT = new TextOutputter();
+
             log.Debug("About to create MessageLoopForm");
             MessageLoopForm = new MessageLoopForm();
             log.Debug("MessageLoopForm created.");
@@ -49,6 +57,23 @@ namespace AutoZilla.Core
             Register(key.Modifiers, key.Key, hotkeyCallback);
         }
 
+        public void Register(Template template)
+        {
+            template.ThrowIfNull("template");
+            template.Key.ThrowIfNull("template.Key", String.Format("The template {0} must have a key in order to be auto-invoked.", template.Name));
+
+            Register(template.Key, AutoTemplateCallback);
+            AutoTemplates.Add(template);
+        }
+
+        void AutoTemplateCallback(ModifiedKey key)
+        {
+            var template = AutoTemplates.Single(t => t.Key == key);
+            string replacedText = template.Process();
+            TOUT.WaitForModifiersUp();
+            TOUT.PasteString(replacedText);
+        }
+
         /// <summary>
         /// Unregisters a single global hot key.
         /// </summary>
@@ -68,8 +93,15 @@ namespace AutoZilla.Core
             Unregister(key.Modifiers, key.Key);
         }
 
-
-
+        public void Unregister(Template template)
+        {
+            template.ThrowIfNull("template");
+            var ourTemplate = AutoTemplates.Single(t => t.Key == template.Key);
+            if (ourTemplate == null)
+                return;
+            AutoTemplates.Remove(ourTemplate);
+            Unregister(ourTemplate.Key);
+        }
 
         /// <summary>
         /// Unregisters all hotkeys that were registered by this application. It is not necessary
