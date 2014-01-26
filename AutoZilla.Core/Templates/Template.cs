@@ -155,14 +155,16 @@ namespace AutoZilla.Core.Templates
             var e = OnVariableReplacement;
             if (e != null)
             {
-                var args = new VariableReplacementEventArgs(variable.Name);
+                object variableVal = null;
                 try
                 {
-                    args.Thing = AutoZillaVariables.GetByName(variable.Name);
+                    variableVal = AutoZillaVariables.GetByName(variable.Name);
                 }
                 catch
                 {
                 }
+
+                var args = new VariableReplacementEventArgs(variable.Name, variableVal);
 
                 e(this, args);
                 if (args.Thing != null)
