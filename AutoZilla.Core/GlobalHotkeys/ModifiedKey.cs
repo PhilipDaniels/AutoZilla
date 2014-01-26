@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace AutoZilla.Core.GlobalHotkeys
 {
@@ -88,7 +89,9 @@ namespace AutoZilla.Core.GlobalHotkeys
                 // Could be "CS-L" or some variant.
                 Keys k;
                 if (!Enum.TryParse(parts[1], out k))
-                    return false;
+                {
+                    k = ResolveKey(parts[1][0]);
+                }
 
                 Modifiers m;
                 if (!ModifiersHelper.TryParse(parts[0], out m))
@@ -101,6 +104,24 @@ namespace AutoZilla.Core.GlobalHotkeys
             {
                 return false;
             }
+        }
+
+        static IntPtr GetKeyboardLayout()
+        {
+            IntPtr fg = NativeMethods.GetForegroundWindow();
+            uint idThread = NativeMethods.GetWindowThreadProcessId(fg, IntPtr.Zero);
+            IntPtr hKL = NativeMethods.GetKeyboardLayout(idThread);
+            return hKL;
+        }
+
+        public static Keys ResolveKey(char ch)
+        {
+            IntPtr hKL = GetKeyboardLayout();
+            short vkWithModifiers = NativeMethods.VkKeyScanEx(ch, hKL);
+            // Virtual key code is returned in lowest byte.
+            int vkOnly = vkWithModifiers & 0xFF;
+            Keys formsKey = (Keys)vkOnly;
+            return formsKey;
         }
 
         /// <summary>

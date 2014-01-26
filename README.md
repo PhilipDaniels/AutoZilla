@@ -38,7 +38,6 @@ files into *.config files. See my blogpost at XXX for how this is done.
 
 TODO
 ====
-- [ ] ModifiedKey: the VK issue - how to translate CA-; ?
 - [ ] Templates: replace variables via an event?
 - [ ] Templates: lots more built-in variables, see the issue in Github.
 - [ ] Create an "AUTOZILLA.ALL" variable for documentation purposes.
@@ -58,3 +57,4 @@ TODO
 - [ ] Config & Build: figure out how to make the build process copy a template if it has changed.
 - [X] TemplateLoader class: load from known "Templates" subfolder. DONE.
 - [X] Templates: "emplatize" refactor. REMOVED.
+- [X] ModifiedKey: the VK issue - how to translate CA-; ? SOLVED! ; is Oem1 in the UK...

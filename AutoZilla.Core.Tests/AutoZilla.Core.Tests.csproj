@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -51,6 +52,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Extensions\BeforeAndAfterTests.cs" />
+    <Compile Include="GlobalHotKeys\ModifiedKeyTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\PadAndAlignTests.cs" />
     <Compile Include="Templates\AutoZillaVariableTests.cs" />

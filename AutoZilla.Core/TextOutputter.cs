@@ -205,7 +205,7 @@ namespace AutoZilla.Core
         /// Move(-2, -5) moves up 2 lines and left 5 characters.
         /// </example>
         /// </summary>
-        /// <param name="down">Number of times to move up. Use a negative number to move down.</param>
+        /// <param name="down">Number of times to move down. Use a negative number to move up.</param>
         /// <param name="right">Number of times to move right. Use a negative number to move left.</param>
         public TextOutputter Move(int down, int right)
         {
