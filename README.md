@@ -38,8 +38,10 @@ files into *.config files. See my blogpost at XXX for how this is done.
 
 TODO
 ====
+- [ ] ModifiedKey: the VK issue - how to translate CA-; ?
 - [ ] Templates: replace variables via an event?
 - [ ] Templates: lots more built-in variables, see the issue in Github.
+- [ ] Create an "AUTOZILLA.ALL" variable for documentation purposes.
 - [ ] Templates: How to have a button on a form do the same thing as running a template?
 - [ ] Vi: need to send a prefix? Doesn't work with paste either.
 - [ ] Tooling: setup FxCop for the project.

@@ -24,7 +24,7 @@ namespace AutoZilla.Plugins.MSSQL
         public void InitialiseHotKeyManager(IGlobalHotKeyManager manager)
         {
             HKM = manager;
-            log.Debug("Initialising.");
+            log.Debug("Initialising MSSQLPlugin.");
 
             TemplateFolder = TemplateLoader.GetDefaultTemplateFolder(Assembly.GetExecutingAssembly());
             LoadAutoTemplates();

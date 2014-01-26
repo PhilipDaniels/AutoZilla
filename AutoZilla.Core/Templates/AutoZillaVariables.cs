@@ -39,7 +39,7 @@ namespace AutoZilla.Core.Templates
 
         public static string DomainUser
         {
-            get 
+            get
             {
                 return System.Security.Principal.WindowsIdentity.GetCurrent().Name;
             }

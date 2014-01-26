@@ -20,9 +20,16 @@ namespace AutoZilla.Core.Templates
     public static class TemplateLoader
     {
         static readonly string AUTOZILLA_SEPARATOR = ";;AZ;;";
-        static readonly string AUTOZILLA_TEMPLATE_EXTENSION = "azt";
 
         static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        public static string TemplateExtension
+        {
+            get
+            {
+                return "azt";
+            }
+        }
 
         /// <summary>
         /// Returns the full path of the default template folder for an assembly.
@@ -44,6 +51,12 @@ namespace AutoZilla.Core.Templates
             return path;
         }
 
+        public static IEnumerable<string> GetTemplatesInFolder(string templateFolder)
+        {
+            templateFolder.ThrowIfDirectoryDoesNotExist("templateFolder");
+            return Directory.GetFiles(templateFolder, "*." + TemplateExtension);
+        }
+
         /// <summary>
         /// Loads all the templates in <paramref name="templateFolder"/>.
         /// </summary>
@@ -52,7 +65,7 @@ namespace AutoZilla.Core.Templates
         {
             templateFolder.ThrowIfDirectoryDoesNotExist("templateFolder");
 
-            string[] templateFiles = Directory.GetFiles(templateFolder, "*." + AUTOZILLA_TEMPLATE_EXTENSION);
+            IEnumerable<string> templateFiles = GetTemplatesInFolder(templateFolder);
 
             // ToList() to force eval at this point. If there are errors
             // the earlier we see them the better.

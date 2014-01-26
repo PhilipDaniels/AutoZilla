@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace AutoZilla.Core
 {
-    public static class WindowUtils
+    static class WindowUtils
     {
         /// <summary>
         /// Returns a handle to the foreground window.

@@ -1,6 +1,8 @@
-﻿using AutoZilla.Properties;
+﻿using AutoZilla.Core.Templates;
+using AutoZilla.Properties;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,8 +12,10 @@ namespace AutoZilla
 {
     class ApplicationContextWithNotifyIcon : ApplicationContext
     {
+        static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         NotifyIcon TrayIcon;
         MainForm TheMainForm = new MainForm();
+        AutoTemplateManager AutoTemplateManager;
 
         public ApplicationContextWithNotifyIcon()
         {
@@ -24,8 +28,10 @@ namespace AutoZilla
             };
 
             TrayIcon.DoubleClick += TrayIcon_DoubleClick;
-        }
 
+            AutoTemplateManager = new AutoTemplateManager();
+            AutoTemplateManager.BeginWatching();
+        }
 
         ContextMenu GetContextMenu()
         {

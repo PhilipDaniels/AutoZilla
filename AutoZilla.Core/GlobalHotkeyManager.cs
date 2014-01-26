@@ -29,11 +29,19 @@ namespace AutoZilla.Core
             log.Debug("About to create MessageLoopForm");
             MessageLoopForm = new MessageLoopForm();
             log.Debug("MessageLoopForm created.");
+
             MessageLoopForm.HotkeyPressed += TheForm_HotkeyPressed;
             MessageLoopForm.HandleDestroyed += MessageLoopForm_HandleDestroyed;
             log.Debug("MessageLoopForm event handlers attached");
+
             MessageLoopForm.Show();
             log.Debug("MessageLoopForm Shown");
+        }
+
+        void InternalRegister(Modifiers modifiers, Keys key, HotkeyCallback hotkeyCallback)
+        {
+            var hk = new GlobalHotkey(modifiers, key, MessageLoopForm, hotkeyCallback, true);
+            HotKeys.Add(hk);
         }
 
         /// <summary>
@@ -47,8 +55,18 @@ namespace AutoZilla.Core
         {
             string keystr = ModifiedKey.ToString(modifiers, key);
             log.Debug("RegisterGlobalHotKey, Hot key = " + keystr);
-            var hk = new GlobalHotkey(modifiers, key, MessageLoopForm, hotkeyCallback, true);
-            HotKeys.Add(hk);
+
+            // For multi-threaded apps, we need to be careful to use the form's handle
+            // on the same thread as it was initially created.
+            if (MessageLoopForm.InvokeRequired)
+            {
+                MessageLoopForm.Invoke(new MethodInvoker(delegate { InternalRegister(modifiers, key, hotkeyCallback); }));
+            }
+            else
+            {
+                InternalRegister(modifiers, key, hotkeyCallback);
+            }
+
             log.Debug(keystr + " successfully registered");
         }
 
@@ -74,6 +92,13 @@ namespace AutoZilla.Core
             TOUT.PasteString(replacedText);
         }
 
+        void InternalUnregister(Modifiers modifiers, Keys key)
+        {
+            var hk = FindHotKeyAndThrowIfNotFound(modifiers, key);
+            hk.Dispose();
+            HotKeys.Remove(hk);
+        }
+
         /// <summary>
         /// Unregisters a single global hot key.
         /// </summary>
@@ -82,9 +107,18 @@ namespace AutoZilla.Core
         public void Unregister(Modifiers modifiers, Keys key)
         {
             log.Debug("UnregisterGlobalHotKey, Hot key = " + ModifiedKey.ToString(modifiers, key));
-            var hk = FindHotKeyAndThrowIfNotFound(modifiers, key);
-            hk.Dispose();
-            HotKeys.Remove(hk);
+
+            // For multi-threaded apps, we need to be careful to use the form's handle
+            // on the same thread as it was initially created.
+            if (MessageLoopForm.InvokeRequired)
+            {
+                MessageLoopForm.Invoke(new MethodInvoker(delegate { InternalUnregister(modifiers, key); }));
+            }
+            else
+            {
+                InternalUnregister(modifiers, key);
+            }
+
             log.Debug("Hot key successfully unregistered");
         }
 

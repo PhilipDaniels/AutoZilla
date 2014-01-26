@@ -14,10 +14,10 @@ namespace AutoZilla
     /// <summary>
     /// Handles the loading and unloading of plugins from the plugin directory.
     /// </summary>
-    class PluginManager
+    sealed class PluginManager
     {
-        public GlobalHotkeyManager HotKeyManager { get; private set; }
-        public IEnumerable<IAutoZillaPlugin> Plugins { get; private set; }
+        GlobalHotkeyManager HotKeyManager { get; set; }
+        IEnumerable<IAutoZillaPlugin> Plugins { get; set; }
 
         public PluginManager()
         {

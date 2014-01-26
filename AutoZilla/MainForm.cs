@@ -15,7 +15,7 @@ namespace AutoZilla
     public partial class MainForm : Form
     {
         PluginManager PluginManager = new PluginManager();
-
+        
         public MainForm()
         {
             InitializeComponent();
