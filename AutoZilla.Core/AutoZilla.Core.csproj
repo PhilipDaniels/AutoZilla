@@ -68,6 +68,7 @@
     <Compile Include="IAutoZillaPlugin.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Templates\AutoZillaVariables.cs" />
+    <Compile Include="Templates\VariableReplacementEventArgs.cs" />
     <Compile Include="Templates\TemplateFormatException.cs" />
     <Compile Include="Templates\Template.cs" />
     <Compile Include="Templates\TemplateLoader.cs" />

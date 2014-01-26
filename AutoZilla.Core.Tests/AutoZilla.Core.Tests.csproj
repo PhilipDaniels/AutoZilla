@@ -57,6 +57,7 @@
     <Compile Include="Extensions\PadAndAlignTests.cs" />
     <Compile Include="Templates\AutoZillaVariableTests.cs" />
     <Compile Include="Templates\TemplateLoaderTests.cs" />
+    <Compile Include="Templates\TemplateTests.cs" />
     <Compile Include="Templates\VariableTests.cs" />
     <Compile Include="Templates\WidthSpecificationTests.cs" />
   </ItemGroup>

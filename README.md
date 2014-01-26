@@ -38,10 +38,9 @@ files into *.config files. See my blogpost at XXX for how this is done.
 
 TODO
 ====
-- [ ] Templates: replace variables via an event?
 - [ ] Templates: lots more built-in variables, see the issue in Github.
-- [ ] Create an "AUTOZILLA.ALL" variable for documentation purposes.
 - [ ] Templates: How to have a button on a form do the same thing as running a template?
+- [ ] Templates: Create an "AUTOZILLA.ALL" variable for documentation purposes.
 - [ ] Vi: need to send a prefix? Doesn't work with paste either.
 - [ ] Tooling: setup FxCop for the project.
 - [ ] Main GUI: Pick one hotkey to display the form?
@@ -57,4 +56,5 @@ TODO
 - [ ] Config & Build: figure out how to make the build process copy a template if it has changed.
 - [X] TemplateLoader class: load from known "Templates" subfolder. DONE.
 - [X] Templates: "emplatize" refactor. REMOVED.
+- [X] Templates: replace variables via an event? DONE.
 - [X] ModifiedKey: the VK issue - how to translate CA-; ? SOLVED! ; is Oem1 in the UK...

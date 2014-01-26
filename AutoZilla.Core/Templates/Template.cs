@@ -24,6 +24,13 @@ namespace AutoZilla.Core.Templates
             RegexOptions.Multiline | RegexOptions.Compiled);
 
         /// <summary>
+        /// This event is raised when the template is replacing a variable.
+        /// You can specify the value the variable should have by setting it
+        /// in the event args.
+        /// </summary>
+        public event EventHandler<VariableReplacementEventArgs> OnVariableReplacement;
+
+        /// <summary>
         /// The key that the template is bound to, that is, pressing this
         /// key should invoke the template. It can be null.
         /// </summary>
@@ -143,10 +150,27 @@ namespace AutoZilla.Core.Templates
                 return thing;
             }
 
-            // TODO: Raise an event here.
+            // Given the user an opportunity to replace via an event.
+            // If this is a built in variable try use it to initialise the Thing.
+            var e = OnVariableReplacement;
+            if (e != null)
+            {
+                var args = new VariableReplacementEventArgs(variable.Name);
+                try
+                {
+                    args.Thing = AutoZillaVariables.GetByName(variable.Name);
+                }
+                catch
+                {
+                }
 
+                e(this, args);
+                if (args.Thing != null)
+                    return args.Thing;
+            }
 
-            // Deal with all built in variables.
+            // Deal with all built in variables. This will throw if the
+            // variable is not found.
             return AutoZillaVariables.GetByName(variable.Name);
         }
     }
