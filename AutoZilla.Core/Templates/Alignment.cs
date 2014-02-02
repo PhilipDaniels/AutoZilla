@@ -15,6 +15,12 @@ namespace AutoZilla.Core.Templates
     public enum Alignment
     {
         /// <summary>
+        /// No alignment. This is not a valid value
+        /// within AutoZilla, but all enums should have it.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
         /// Align the input string to the left: "ab" -> "ab  ".
         /// </summary>
         Left = '<',

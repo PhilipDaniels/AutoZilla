@@ -1,7 +1,7 @@
 ﻿using AutoZilla.Core.Extensions;
-using AutoZilla.Core.Validation;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace AutoZilla.Core.Templates
 {
@@ -11,8 +11,8 @@ namespace AutoZilla.Core.Templates
     /// where NAME, WIDTH and PATTERN are all optional but you must have at
     /// least a NAME or WIDTH.
     /// </summary>
-    [DebuggerDisplay("Specification")]
-    internal class Variable
+    [DebuggerDisplay("{Specification}")]
+    internal sealed class Variable
     {
         /// <summary>
         /// The initial string specification of the variable, i.e. the text that
@@ -48,7 +48,7 @@ namespace AutoZilla.Core.Templates
             specification.ThrowIfNull("specification");
 
             // Trim off leading "${" and trailing "}".
-            if (specification.StartsWith("${") && specification.EndsWith("}"))
+            if (specification.StartsWith("${", StringComparison.OrdinalIgnoreCase) && specification.EndsWith("}", StringComparison.OrdinalIgnoreCase))
                 Specification = specification.Substring(2, specification.Length - 3);
             else
                 Specification = specification;
@@ -88,7 +88,7 @@ namespace AutoZilla.Core.Templates
                 if (thing != null)
                 {
                     var pattern = "{0:" + Pattern + "}";
-                    text = String.Format(pattern, thing);
+                    text = String.Format(CultureInfo.CurrentCulture, pattern, thing);
                 }
             }
 

@@ -1,10 +1,4 @@
-﻿using AutoZilla.Core.GlobalHotkeys;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace AutoZilla.Core
 {
     /// <summary>
@@ -19,7 +13,7 @@ namespace AutoZilla.Core
         /// take the reference to the <code>IGlobalHotKeyManager</code> and store
         /// it away somewhere for later use.
         /// </summary>
-        /// <param name="manager"></param>
+        /// <param name="manager">AutoZilla's hot key manager.</param>
         void InitialiseHotKeyManager(IGlobalHotKeyManager manager);
     }
 }

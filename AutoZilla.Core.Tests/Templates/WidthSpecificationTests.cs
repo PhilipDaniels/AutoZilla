@@ -61,6 +61,16 @@ namespace AutoZilla.Core.Tests.Templates
             Assert.AreEqual(' ', ws.PadChar);
         }
 
+        IEnumerable<Alignment> ValidAlignments
+        {
+            get
+            {
+                yield return Alignment.Left;
+                yield return Alignment.Center;
+                yield return Alignment.Right;
+            }
+        }
+
         [TestMethod]
         public void SingleCharacterInterpretedCorrectly()
         {
@@ -68,7 +78,7 @@ namespace AutoZilla.Core.Tests.Templates
             // that it is detected properly.
             WidthSpecification ws;
 
-            foreach (var alignment in Enum<Alignment>.GetValues())
+            foreach (var alignment in ValidAlignments)
             {
                 var c = (char)alignment;
                 ws = new WidthSpecification(c.ToString());
@@ -107,8 +117,10 @@ namespace AutoZilla.Core.Tests.Templates
         {
             get
             {
-                foreach (var alignment in Enum<Alignment>.GetValues())
+                foreach (var alignment in ValidAlignments)
+                {
                     yield return (char)alignment;
+                }
             }
         }
 

@@ -1,7 +1,11 @@
-﻿
-using System;
-namespace AutoZilla.Core.GlobalHotkeys
+﻿using System;
+
+namespace AutoZilla.Core.GlobalHotKeys
 {
+    /// <summary>
+    /// A helper class for converting the <code>Modifiers</code> enum
+    /// to and from its string representation.
+    /// </summary>
     public static class ModifiersHelper
     {
         /// <summary>
@@ -38,7 +42,7 @@ namespace AutoZilla.Core.GlobalHotkeys
         /// <returns>True if the parsing succeeded, false otherwise.</returns>
         public static bool TryParse(string s, out Modifiers result)
         {
-            result = Modifiers.NoMod;
+            result = Modifiers.None;
 
             if (String.IsNullOrWhiteSpace(s))
                 return false;

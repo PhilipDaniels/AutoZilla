@@ -1,4 +1,4 @@
-﻿using AutoZilla.Core.GlobalHotkeys;
+﻿using AutoZilla.Core.GlobalHotKeys;
 using System;
 
 namespace AutoZilla.Core
@@ -7,13 +7,20 @@ namespace AutoZilla.Core
     /// The EventArgs type used by the message loop form to tell the
     /// hot key manager that a hot key has been pressed.
     /// </summary>
-    internal class HotkeyPressedEventArgs : EventArgs
+    internal class HotKeyPressedEventArgs : EventArgs
     {
-        public ModifiedKey HotkeyInfo { get; private set; }
+        /// <summary>
+        /// The <code>ModifiedKey</code> that was pressed.
+        /// </summary>
+        public ModifiedKey ModifiedKey { get; private set; }
 
-        public HotkeyPressedEventArgs(ModifiedKey hotkeyInfo)
+        /// <summary>
+        /// Construct a new <code>HotKeyPressedEventArgs</code> object.
+        /// </summary>
+        /// <param name="modifiedKey">The <code>ModifiedKey</code> that was pressed.</param>
+        public HotKeyPressedEventArgs(ModifiedKey modifiedKey)
         {
-            HotkeyInfo = hotkeyInfo;
+            ModifiedKey = modifiedKey;
         }
     }
 }

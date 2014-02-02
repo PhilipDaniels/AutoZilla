@@ -1,5 +1,5 @@
 ﻿using AutoZilla.Core;
-using AutoZilla.Core.GlobalHotkeys;
+using AutoZilla.Core.GlobalHotKeys;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,17 +30,19 @@ namespace AutoZilla.Demo1
             // hot key hooking will not work with console apps (they don't have a message loop).
 
             // n.b. This simple demo will throw an exception if some other application has registered CA-L as
-            // a hotkey.
-            GlobalHotkeyManager HotKeyManager = new GlobalHotkeyManager();
-            HotKeyManager.Register(Modifiers.Ctrl | Modifiers.Alt, Keys.L, MyCallback);
+            // a HotKey.
+            using (GlobalHotKeyManager HotKeyManager = new GlobalHotKeyManager())
+            {
+                HotKeyManager.Register(Modifiers.Ctrl | Modifiers.Alt, Keys.L, MyCallback);
 
-            Application.Run(new Form1());
+                Application.Run(new Form1());
 
-            // Try this if you want a no-GUI program.
-            //Application.Run(new InvisibleForm());
+                // Try this if you want a no-GUI program.
+                //Application.Run(new InvisibleForm());
+            }
         }
 
-        static void MyCallback(ModifiedKey hotkeyInfo)
+        static void MyCallback(ModifiedKey HotKeyInfo)
         {
             // Slow
             //TO.WaitForModifiersUp();

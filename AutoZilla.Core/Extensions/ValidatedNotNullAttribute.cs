@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace AutoZilla.Core.Validation
+namespace AutoZilla.Core.Extensions
 {
     /// <summary>
     /// VS Code Analysis will not actually recognise the generic helper method

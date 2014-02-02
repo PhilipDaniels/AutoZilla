@@ -13,14 +13,14 @@ namespace AutoZilla.Core.Tests.Templates
         [TestMethod]
         public void NullContentThrowsArgumentNullException()
         {
-            Template t = TemplateLoader.LoadTemplateFromString(null);
+            TextTemplate t = TemplateLoader.LoadTemplateFromString(null);
         }
 
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         [TestMethod]
         public void EmptyContentThrowsArgumentOutOfRangeException()
         {
-            Template t = TemplateLoader.LoadTemplateFromString("  ");
+            TextTemplate t = TemplateLoader.LoadTemplateFromString("  ");
         }
 
         [ExpectedException(typeof(TemplateFormatException))]
@@ -29,7 +29,7 @@ namespace AutoZilla.Core.Tests.Templates
         {
             string body = @"[Config];;AZ;;";
 
-            Template t = TemplateLoader.LoadTemplateFromString(body);
+            TextTemplate t = TemplateLoader.LoadTemplateFromString(body);
         }
 
         [ExpectedException(typeof(TemplateFormatException))]
@@ -38,7 +38,7 @@ namespace AutoZilla.Core.Tests.Templates
         {
             string body = @";;AZ;;body";
 
-            Template t = TemplateLoader.LoadTemplateFromString(body);
+            TextTemplate t = TemplateLoader.LoadTemplateFromString(body);
         }
 
         [TestMethod]
@@ -46,9 +46,9 @@ namespace AutoZilla.Core.Tests.Templates
         {
             string body = @"[Config];;AZ;;body";
 
-            Template t = TemplateLoader.LoadTemplateFromString(body);
+            TextTemplate t = TemplateLoader.LoadTemplateFromString(body);
             Assert.IsNull(t.Name);
-            Assert.IsNull(t.Key);
+            Assert.IsNull(t.ModifiedKey);
             Assert.IsNull(t.Description);
             Assert.IsNull(t.Filename);
             Assert.IsNull(t.FilePath);
@@ -59,14 +59,14 @@ namespace AutoZilla.Core.Tests.Templates
         [TestMethod]
         public void NonExistentFileThrowsException()
         {
-            Template t = TemplateLoader.LoadTemplate(@"I:\Definitely\Do\Not\Exist");
+            TextTemplate t = TemplateLoader.LoadTemplate(@"I:\Definitely\Do\Not\Exist");
         }
 
         [ExpectedException(typeof(DirectoryNotFoundException))]
         [TestMethod]
         public void NonExistentDirectoryThrowsException()
         {
-            IEnumerable<Template> templates = TemplateLoader.LoadTemplates(@"I:\Definitely\Do\Not\Exist");
+            IEnumerable<TextTemplate> templates = TemplateLoader.LoadTemplates(@"I:\Definitely\Do\Not\Exist");
         }
 
     }

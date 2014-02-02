@@ -1,10 +1,10 @@
 ﻿using AutoZilla.Core.Extensions;
-using AutoZilla.Core.GlobalHotkeys;
-using AutoZilla.Core.Validation;
+using AutoZilla.Core.GlobalHotKeys;
 using Nini.Config;
 using Nini.Ini;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -19,17 +19,10 @@ namespace AutoZilla.Core.Templates
     /// </summary>
     public static class TemplateLoader
     {
-        static readonly string AUTOZILLA_SEPARATOR = ";;AZ;;";
-
         static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static string TemplateExtension
-        {
-            get
-            {
-                return "azt";
-            }
-        }
+        public const string TemplateExtension = "azt";
+        const string AutoZillaSeparator = ";;AZ;;";
 
         /// <summary>
         /// Returns the full path of the default template folder for an assembly.
@@ -44,24 +37,31 @@ namespace AutoZilla.Core.Templates
             assembly.ThrowIfNull("assembly");
             
             string codeBase = assembly.CodeBase;
-            UriBuilder uri = new UriBuilder(codeBase);
-            string path = Uri.UnescapeDataString(uri.Path);
+            Uri uri = new Uri(codeBase);
+            UriBuilder uriBuilder = new UriBuilder(uri);
+            string path = Uri.UnescapeDataString(uriBuilder.Path);
             path = Path.GetDirectoryName(path);
             path = Path.Combine(path, "Templates");
             return path;
         }
 
+        /// <summary>
+        /// Finds all the templates in a specific folder, that is, all those files
+        /// which end with the AutoZilla template extension.
+        /// </summary>
+        /// <param name="templateFolder">The folder to scan.</param>
+        /// <returns>List of matching files.</returns>
         public static IEnumerable<string> GetTemplatesInFolder(string templateFolder)
         {
             templateFolder.ThrowIfDirectoryDoesNotExist("templateFolder");
-            return Directory.GetFiles(templateFolder, "*." + TemplateExtension);
+            return Directory.GetFiles(templateFolder, "*." + TemplateLoader.TemplateExtension);
         }
 
         /// <summary>
         /// Loads all the templates in <paramref name="templateFolder"/>.
         /// </summary>
         /// <param name="templateFolder">The folder to load templates from.</param>
-        public static IEnumerable<Template> LoadTemplates(string templateFolder)
+        public static IEnumerable<TextTemplate> LoadTemplates(string templateFolder)
         {
             templateFolder.ThrowIfDirectoryDoesNotExist("templateFolder");
 
@@ -79,7 +79,7 @@ namespace AutoZilla.Core.Templates
         /// </summary>
         /// <param name="templateFilePath">Full path to the template.</param>
         /// <returns>Template object.</returns>
-        public static Template LoadTemplate(string templateFilePath)
+        public static TextTemplate LoadTemplate(string templateFilePath)
         {
             templateFilePath.ThrowIfFileDoesNotExist("templateFilePath");
 
@@ -92,31 +92,32 @@ namespace AutoZilla.Core.Templates
         /// </summary>
         /// <param name="template">The template.</param>
         /// <returns>Template object.</returns>
-        public static Template LoadTemplateFromString(string template)
+        public static TextTemplate LoadTemplateFromString(string template)
         {
             template.ThrowIfNullOrWhiteSpace("template");
 
             return InternalLoadTemplateFromString(null, template);
         }
 
-        static Template InternalLoadTemplateFromString(string templateFilePath, string template)
+        static TextTemplate InternalLoadTemplateFromString(string templateFilePath, string template)
         {
             template.ThrowIfNullOrWhiteSpace("template");
 
             try
             {
                 string configAsString, templateBody;
-                template.BeforeAndAfter(AUTOZILLA_SEPARATOR, StringComparison.InvariantCultureIgnoreCase, out configAsString, out templateBody);
+                template.BeforeAndAfter(AutoZillaSeparator, StringComparison.OrdinalIgnoreCase, out configAsString, out templateBody);
 
                 if (String.IsNullOrWhiteSpace(configAsString))
                 {
                     string msg = String.Format
                         (
+                        CultureInfo.InvariantCulture,
                         "The template{0}{1} has an invalid format. No config section was found. " +
                         "Check for the AutoZilla separator '{2}'.",
                         templateFilePath == null ? "" : " ",
-                        templateFilePath ?? "", 
-                        AUTOZILLA_SEPARATOR
+                        templateFilePath ?? "",
+                        AutoZillaSeparator
                         );
                     throw new TemplateFormatException(msg, template);
                 }
@@ -125,11 +126,12 @@ namespace AutoZilla.Core.Templates
                 {
                     string msg = String.Format
                         (
+                        CultureInfo.InvariantCulture,
                         "The template{0}{1} has an invalid format. No template body was found. " +
                         "Check for the AutoZilla separator '{2}'.",
                         templateFilePath == null ? "" : " ",
-                        templateFilePath ?? "", 
-                        AUTOZILLA_SEPARATOR
+                        templateFilePath ?? "",
+                        AutoZillaSeparator
                         );
                     throw new TemplateFormatException(msg, template);
                 }
@@ -138,7 +140,7 @@ namespace AutoZilla.Core.Templates
                 var config = ParseTemplateConfig(templateFilePath, configAsString);
                 templateBody = templateBody.TrimOneLeadingNewLine();
 
-                var t = new Template(config.Key, config.Name, config.Description, templateFilePath, templateBody);
+                var t = new TextTemplate(config.Key, config.Name, config.Description, templateFilePath, templateBody);
                 return t;
             }
             catch (Exception ex)
@@ -157,15 +159,15 @@ namespace AutoZilla.Core.Templates
                 var config = source.Configs["Config"];
                 source.CaseSensitive = false;
 
-                string hotkey = config.Get("Key");
+                string HotKey = config.Get("Key");
 
                 ModifiedKey modifiedKey = null;
-                if (!String.IsNullOrWhiteSpace(hotkey))
+                if (!String.IsNullOrWhiteSpace(HotKey))
                 {
-                    if (!ModifiedKey.TryParse(hotkey, out modifiedKey))
+                    if (!ModifiedKey.TryParse(HotKey, out modifiedKey))
                     {
-                        var msg = String.Format("The modified key specification {0} in template {1} is invalid.", hotkey, templateFilePath);
-                        throw new Exception(msg);
+                        var msg = String.Format(CultureInfo.InvariantCulture, "The modified key specification {0} in template {1} is invalid.", HotKey, templateFilePath);
+                        throw new TemplateFormatException(msg);
                     }
                 }
 

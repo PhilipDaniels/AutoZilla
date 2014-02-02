@@ -1,4 +1,4 @@
-﻿using AutoZilla.Core.GlobalHotkeys;
+﻿using AutoZilla.Core.GlobalHotKeys;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -15,9 +15,9 @@ namespace AutoZilla.Core.Tests.GlobalHotKeys
         [TestMethod]
         public void TestResolve()
         {
-            Keys k1 = ModifiedKey.ResolveKey('a');
-            Keys k2 = ModifiedKey.ResolveKey(';');
-            Keys k3 = ModifiedKey.ResolveKey('5');
+            Keys k1 = ModifiedKey.ConvertCharactorToKey('a');
+            Keys k2 = ModifiedKey.ConvertCharactorToKey(';');
+            Keys k3 = ModifiedKey.ConvertCharactorToKey('5');
         }
     }
 }

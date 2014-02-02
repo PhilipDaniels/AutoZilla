@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 
 namespace AutoZilla.Core.Templates
@@ -171,7 +172,7 @@ namespace AutoZilla.Core.Templates
                 else if (Char.IsDigit(c1))
                 {
                     // Assume it's a width.
-                    MinWidth = Int32.Parse(c1.ToString());
+                    MinWidth = Int32.Parse(c1.ToString(), CultureInfo.InvariantCulture);
                     MaxWidth = MinWidth;
                 }
                 else
@@ -237,8 +238,8 @@ namespace AutoZilla.Core.Templates
                 int n;
                 if (!Int32.TryParse(parts[0], out n))
                 {
-                    var msg = String.Format("The width specification {0} is invalid.", OriginalText);
-                    throw new Exception(msg);
+                    var msg = String.Format(CultureInfo.InvariantCulture, "The width specification {0} is invalid.", OriginalText);
+                    throw new ArgumentOutOfRangeException(msg);
                 }
                 MinWidth = n;
                 MaxWidth = MinWidth;
@@ -250,7 +251,7 @@ namespace AutoZilla.Core.Templates
             }
             else
             {
-                throw new Exception("A width specifier cannot have more than 2 numeric components (meaning min and max widths). You specified: " + OriginalText);
+                throw new ArgumentOutOfRangeException("A width specifier cannot have more than 2 numeric components (meaning min and max widths). You specified: " + OriginalText);
             }
         }
 
@@ -262,14 +263,14 @@ namespace AutoZilla.Core.Templates
             int result;
             if (!Int32.TryParse(width, out result))
             {
-                var msg = String.Format("The width specification {0} is invalid.", OriginalText);
-                throw new Exception(msg);
+                var msg = String.Format(CultureInfo.InvariantCulture, "The width specification {0} is invalid.", OriginalText);
+                throw new ArgumentOutOfRangeException(msg);
             }
 
             return result;
         }
 
-        bool IsAlignmentChar(char c)
+        static bool IsAlignmentChar(char c)
         {
             return c == (char)Alignment.Left ||
                 c == (char)Alignment.Center || 

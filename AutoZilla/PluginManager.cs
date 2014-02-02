@@ -5,9 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace AutoZilla
 {
@@ -16,14 +13,17 @@ namespace AutoZilla
     /// </summary>
     sealed class PluginManager
     {
-        GlobalHotkeyManager HotKeyManager { get; set; }
-        IEnumerable<IAutoZillaPlugin> Plugins { get; set; }
+        GlobalHotKeyManager HotKeyManager;
+        IEnumerable<IAutoZillaPlugin> Plugins;
 
         public PluginManager()
         {
-            HotKeyManager = new GlobalHotkeyManager();
+            HotKeyManager = new GlobalHotKeyManager();
         }
 
+        /// <summary>
+        /// Loads all the plugins from the plugins folder.
+        /// </summary>
         public void LoadAllPlugins()
         {
             Plugins = LoadPlugins();
@@ -38,7 +38,7 @@ namespace AutoZilla
             }
         }
 
-        IEnumerable<IAutoZillaPlugin> LoadPlugins()
+        static IEnumerable<IAutoZillaPlugin> LoadPlugins()
         {
             string[] pluginFiles = Directory.GetFiles(AutoZillaVariables.PluginsFolder, "*.dll", SearchOption.AllDirectories);
 

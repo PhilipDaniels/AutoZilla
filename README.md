@@ -9,7 +9,7 @@ library which provides:
 - A basis for writing and loading plugins
 
 A main application runs as a task-tray application and allows the user to load
-and unload plugins and see which hotkeys they have registered.
+and unload plugins and see which HotKeys they have registered.
 
 
 Solution Contents
@@ -22,7 +22,7 @@ create a plugin.
 **AutoZilla.Core.Tests** is a set of unit tests for AutoZilla.Core.
 
 **AutoZilla.Demo1** is a very simple, easy to understand demo project
-which shows the minimum needed to register a hotkey and run a callback.
+which shows the minimum needed to register a HotKey and run a callback.
 
 **AutoZilla.Plugins.MSSQL** is a full-featured plugin for auto-typing MS SQL
 related text.
@@ -43,7 +43,7 @@ TODO
 - [ ] Templates: Create an "AUTOZILLA.ALL" variable for documentation purposes.
 - [ ] Vi: need to send a prefix? Doesn't work with paste either.
 - [ ] Tooling: setup FxCop for the project.
-- [ ] Main GUI: Pick one hotkey to display the form?
+- [ ] Main GUI: Pick one HotKey to display the form?
 - [ ] Main GUI: get decent icons in 16x16 for the tray, larger for the toolbar
 - [ ] Main GUI: create a log4net appender for the debug tab
 - [ ] Main GUI: provide ability to load & unload keys & plugins, and block particular ones.
@@ -54,6 +54,7 @@ TODO
 - [ ] Core: How do we handle versions - 0.1 etc.
 - [ ] Config: only generate Transform.xsl once.
 - [ ] Config & Build: figure out how to make the build process copy a template if it has changed.
+- [ ] Plugins/AutoTemplates: Wikipedia tables! and continued lists
 - [X] TemplateLoader class: load from known "Templates" subfolder. DONE.
 - [X] Templates: "emplatize" refactor. REMOVED.
 - [X] Templates: replace variables via an event? DONE.

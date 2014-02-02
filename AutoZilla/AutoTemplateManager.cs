@@ -3,27 +3,32 @@ using AutoZilla.Core.Templates;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AutoZilla
 {
+    /// <summary>
+    /// This class manages the templates in the "AutoTemplates" folder. See the readme
+    /// in that folder for further information.
+    /// </summary>
     sealed class AutoTemplateManager
     {
         static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        string AutoTemplateFolder { get; set; }
-        GlobalHotkeyManager HotKeyManager { get; set; }
-        FileSystemWatcher Watcher { get; set; }
-        List<Template> ActiveTemplates { get; set; }
+        string AutoTemplateFolder;
+        GlobalHotKeyManager HotKeyManager;
+        FileSystemWatcher Watcher;
+        List<TextTemplate> ActiveTemplates;
 
         internal AutoTemplateManager()
         {
-            HotKeyManager = new GlobalHotkeyManager();
-            ActiveTemplates = new List<Template>();
+            HotKeyManager = new GlobalHotKeyManager();
+            ActiveTemplates = new List<TextTemplate>();
             AutoTemplateFolder = Path.Combine(AutoZillaVariables.ExeFolder, "AutoTemplates");
         }
 
+        /// <summary>
+        /// Watch for changes (new/delete/edit/rename) in the AutoTemplates folder.
+        /// If something changes then unload and reload the templates.
+        /// </summary>
         internal void BeginWatching()
         {
             if (!Directory.Exists(AutoTemplateFolder))
@@ -42,7 +47,7 @@ namespace AutoZilla
             Watcher.Renamed += AutoTemplatesWatcher_SomethingChanged;
             Watcher.EnableRaisingEvents = true;
 
-            // Initial load.
+            // Initial load (because we won't get an event when we start up).
             LoadTemplates();
         }
 
@@ -76,7 +81,7 @@ namespace AutoZilla
                 HotKeyManager.Unregister(template);
             }
 
-            ActiveTemplates = new List<Template>();
+            ActiveTemplates = new List<TextTemplate>();
         }
 
         void LoadTemplates()
@@ -88,7 +93,7 @@ namespace AutoZilla
                 try
                 {
                     var template = TemplateLoader.LoadTemplate(file);
-                    if (template.Key != null && !String.IsNullOrEmpty(template.OriginalText))
+                    if (template.ModifiedKey != null && !String.IsNullOrEmpty(template.OriginalText))
                     {
                         HotKeyManager.Register(template);
                         ActiveTemplates.Add(template);

@@ -11,7 +11,7 @@ namespace AutoZilla.Core.Tests.Templates
         [TestMethod]
         public void VariableReplacementViaEventsWorks()
         {
-            var template = new Template("${DOMAINUSER}");
+            var template = new TextTemplate("${DOMAINUSER}");
             template.OnVariableReplacement += VariableReplacementViaEventsWorks_OnVariableReplacement;
             string result = template.Process();
             Assert.AreEqual(DUMMY_VALUE, result);
@@ -26,7 +26,7 @@ namespace AutoZilla.Core.Tests.Templates
         public void NoOpVariableReplacementViaEventsWorks()
         {
             // We should get something back because we do not set it in the event.
-            var template = new Template("${DOMAINUSER}");
+            var template = new TextTemplate("${DOMAINUSER}");
             template.OnVariableReplacement += NoOpVariableReplacementViaEventsWorks_OnVariableReplacement;
             string result = template.Process();
             Assert.AreNotEqual("", result);

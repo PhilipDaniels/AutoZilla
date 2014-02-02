@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AutoZilla.Core.Extensions
 {
@@ -10,18 +7,22 @@ namespace AutoZilla.Core.Extensions
     /// Handy class for enumerating over the values of an enum, because
     /// Enum.GetValues() does not return what you think it does...
     /// </summary>
-    /// <example>
-    /// foreach (var x in Enum&lt;Alignment&gt;.GetValues()
-    /// </example>
-    /// <typeparam name="T">An enum type.</typeparam>
-    public static class Enum<T> where T : struct, IComparable, IFormattable, IConvertible
+    public static class EnumHelper
     {
-        public static IEnumerable<T> GetValues()
+        /// <summary>
+        /// Gets all the values of an enumeration.
+        /// </summary>
+        /// <returns>All the values of an enumeration.</returns>
+        public static IEnumerable<T> GetValues<T>()
         {
             return (T[])Enum.GetValues(typeof(T));
         }
 
-        public static IEnumerable<string> GetNames()
+        /// <summary>
+        /// Gets all the names of an enumeration.
+        /// </summary>
+        /// <returns>All the names of an enumeration.</returns>
+        public static IEnumerable<string> GetNames<T>()
         {
             return Enum.GetNames(typeof(T));
         }

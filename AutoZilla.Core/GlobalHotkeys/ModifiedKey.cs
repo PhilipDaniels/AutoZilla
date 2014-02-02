@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Windows.Input;
 
-namespace AutoZilla.Core.GlobalHotkeys
+namespace AutoZilla.Core.GlobalHotKeys
 {
     /// <summary>
     /// Represents a combination of a <code>Keys.Key</code> and <code>Modifiers</code>.
@@ -35,7 +32,7 @@ namespace AutoZilla.Core.GlobalHotkeys
         }
 
         /// <summary>
-        /// Produces a nice human readable representation of the <code>ModifiedKey</code>.
+        /// Produces a human readable representation of the <code>ModifiedKey</code>.
         /// </summary>
         /// <returns>String rep using CSAW for Control, Shift, Alt and Win modifiers.</returns>
         public override string ToString()
@@ -44,10 +41,12 @@ namespace AutoZilla.Core.GlobalHotkeys
         }
 
         /// <summary>
-        /// Produces a nice human readable representation of the hot key info.
+        /// Produces a human readable representation of the hot key info.
         /// Static version because sometimes we have these two pieces of information
         /// separately, not as an object.
         /// </summary>
+        /// <param name="modifiers">The key modifiers.</param>
+        /// <param name="key">The keycode.</param>
         /// <returns>String rep using CSAW for Control, Shift, Alt and Win modifiers.</returns>
         public static string ToString(Modifiers modifiers, Keys key)
         {
@@ -81,7 +80,7 @@ namespace AutoZilla.Core.GlobalHotkeys
                 if (!Enum.TryParse(parts[0], out k))
                     return false;
 
-                result = new ModifiedKey(Modifiers.NoMod, k);
+                result = new ModifiedKey(Modifiers.None, k);
                 return true;
             }
             else if (parts.Length == 2)
@@ -90,7 +89,7 @@ namespace AutoZilla.Core.GlobalHotkeys
                 Keys k;
                 if (!Enum.TryParse(parts[1], out k))
                 {
-                    k = ResolveKey(parts[1][0]);
+                    k = ConvertCharactorToKey(parts[1][0]);
                 }
 
                 Modifiers m;
@@ -114,10 +113,15 @@ namespace AutoZilla.Core.GlobalHotkeys
             return hKL;
         }
 
-        public static Keys ResolveKey(char ch)
+        /// <summary>
+        /// Converts a .net character into the corresponding Windows Forms Virtual Key.
+        /// </summary>
+        /// <param name="character">The character to resolve.</param>
+        /// <returns>Corresponding member from the Keys enum.</returns>
+        public static Keys ConvertCharactorToKey(char character)
         {
             IntPtr hKL = GetKeyboardLayout();
-            short vkWithModifiers = NativeMethods.VkKeyScanEx(ch, hKL);
+            short vkWithModifiers = NativeMethods.VkKeyScanEx(character, hKL);
             // Virtual key code is returned in lowest byte.
             int vkOnly = vkWithModifiers & 0xFF;
             Keys formsKey = (Keys)vkOnly;
@@ -174,7 +178,6 @@ namespace AutoZilla.Core.GlobalHotkeys
         }
         #endregion
 
-
         private ModifiedKey(IntPtr lParam)
         {
             var lpInt = (int)lParam;
@@ -184,12 +187,12 @@ namespace AutoZilla.Core.GlobalHotkeys
 
         internal static ModifiedKey GetFromMessage(Message m)
         {
-            return !IsHotkeyMessage(m) ? null : new ModifiedKey(m.LParam);
+            return !IsHotKeyMessage(m) ? null : new ModifiedKey(m.LParam);
         }
 
-        internal static bool IsHotkeyMessage(Message m)
+        internal static bool IsHotKeyMessage(Message m)
         {
-            return m.Msg == Win32.WM_HOTKEY_MSG_ID;
+            return m.Msg == NativeMethods.WM_HotKey_MSG_ID;
         }
     }
 }

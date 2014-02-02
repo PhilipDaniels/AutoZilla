@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WindowsInput;
 using WindowsInput.Native;
@@ -22,9 +18,19 @@ namespace AutoZilla.Core
     /// </summary>
     public class TextOutputter
     {
+        /// <summary>
+        /// How long to sleep for after pasting text.
+        /// </summary>
         public int InterOutputSleepMilliseconds { get; private set; }
+
+        /// <summary>
+        /// How long to sleep for when checking to see if the modifier keys
+        /// have been released.
+        /// </summary>
         public int ModifierWaitSleepMilliseconds { get; private set; }
-        public IInputSimulator Sim { get; private set; }
+
+
+        IInputSimulator Sim;
 
         public TextOutputter()
             : this(50, 50)

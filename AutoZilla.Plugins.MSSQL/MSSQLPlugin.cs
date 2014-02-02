@@ -1,6 +1,6 @@
 ﻿using AutoZilla.Core;
 using AutoZilla.Core.Extensions;
-using AutoZilla.Core.GlobalHotkeys;
+using AutoZilla.Core.GlobalHotKeys;
 using AutoZilla.Core.Templates;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace AutoZilla.Plugins.MSSQL
         static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         IGlobalHotKeyManager HKM;
         TextOutputter TOUT = new TextOutputter();
-        Template HeaderCommentTemplate;
+        TextTemplate HeaderCommentTemplate;
         string TemplateFolder;
 
         public void InitialiseHotKeyManager(IGlobalHotKeyManager manager)
@@ -52,7 +52,7 @@ namespace AutoZilla.Plugins.MSSQL
         void LoadCustomTemplates()
         {
             HeaderCommentTemplate = TemplateLoader.LoadTemplate(Path.Combine(TemplateFolder, "HeaderComment.azt"));
-            HKM.Register(HeaderCommentTemplate.Key, OutputHeaderComment);
+            HKM.Register(HeaderCommentTemplate.ModifiedKey, OutputHeaderComment);
         }
 
         void OutputHeaderComment(ModifiedKey key)

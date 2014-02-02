@@ -1,4 +1,4 @@
-﻿using AutoZilla.Core.GlobalHotkeys;
+﻿using AutoZilla.Core.GlobalHotKeys;
 using System;
 using System.Windows.Forms;
 
@@ -6,11 +6,12 @@ namespace AutoZilla.Core
 {
     /// <summary>
     /// Registering a global hot key requires a form to receive the WndProc messages.
-    /// That is the purpose of this form. It is invisible.
+    /// That is the purpose of this form. It is invisible and used only within the
+    /// AutoZilla core.
     /// </summary>
     internal partial class MessageLoopForm : InvisibleForm
     {
-        internal event EventHandler<HotkeyPressedEventArgs> HotkeyPressed;
+        internal event EventHandler<HotKeyPressedEventArgs> HotKeyPressed;
 
         internal MessageLoopForm()
         {
@@ -19,20 +20,20 @@ namespace AutoZilla.Core
 
         protected override void WndProc(ref Message m)
         {
-            var hotkeyInfo = ModifiedKey.GetFromMessage(m);
-            if (hotkeyInfo != null)
+            var HotKeyInfo = ModifiedKey.GetFromMessage(m);
+            if (HotKeyInfo != null)
             {
-                HandleHotKey(hotkeyInfo);
+                HandleHotKey(HotKeyInfo);
             }
             base.WndProc(ref m);
         }
 
-        void HandleHotKey(ModifiedKey hotkeyInfo)
+        void HandleHotKey(ModifiedKey HotKeyInfo)
         {
-            var handler = HotkeyPressed;
+            var handler = HotKeyPressed;
             if (handler != null)
             {
-                var args = new HotkeyPressedEventArgs(hotkeyInfo);
+                var args = new HotKeyPressedEventArgs(HotKeyInfo);
                 handler(this, args);
             }
         }

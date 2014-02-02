@@ -1,8 +1,9 @@
-﻿using AutoZilla.Core.GlobalHotkeys;
+﻿using AutoZilla.Core.Extensions;
+using AutoZilla.Core.GlobalHotKeys;
 using AutoZilla.Core.Templates;
-using AutoZilla.Core.Validation;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -12,36 +13,30 @@ namespace AutoZilla.Core
     /// Allows you to register global hot keys and be notified when they are pressed.
     /// This type is not thread safe (you must do your own locking if necessary).
     /// </summary>
-    public class GlobalHotkeyManager : IGlobalHotKeyManager
+    public sealed class GlobalHotKeyManager : IGlobalHotKeyManager, IDisposable
     {
         static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         MessageLoopForm MessageLoopForm;
-        List<GlobalHotkey> HotKeys;
-        List<Template> AutoTemplates;
+        List<GlobalHotKey> HotKeys;
+        List<TextTemplate> AutoTemplates;
         TextOutputter TOUT;
 
-        public GlobalHotkeyManager()
+        public GlobalHotKeyManager()
         {
-            HotKeys = new List<GlobalHotkey>();
-            AutoTemplates = new List<Template>();
+            HotKeys = new List<GlobalHotKey>();
+            AutoTemplates = new List<TextTemplate>();
             TOUT = new TextOutputter();
 
             log.Debug("About to create MessageLoopForm");
             MessageLoopForm = new MessageLoopForm();
             log.Debug("MessageLoopForm created.");
 
-            MessageLoopForm.HotkeyPressed += TheForm_HotkeyPressed;
+            MessageLoopForm.HotKeyPressed += TheForm_HotKeyPressed;
             MessageLoopForm.HandleDestroyed += MessageLoopForm_HandleDestroyed;
             log.Debug("MessageLoopForm event handlers attached");
 
             MessageLoopForm.Show();
             log.Debug("MessageLoopForm Shown");
-        }
-
-        void InternalRegister(Modifiers modifiers, Keys key, HotkeyCallback hotkeyCallback)
-        {
-            var hk = new GlobalHotkey(modifiers, key, MessageLoopForm, hotkeyCallback, true);
-            HotKeys.Add(hk);
         }
 
         /// <summary>
@@ -50,9 +45,13 @@ namespace AutoZilla.Core
         /// </summary>
         /// <param name="modifiers">Key modifiers (Shift, Alt etc.) that you want applied.</param>
         /// <param name="key">The key.</param>
-        /// <param name="hotkeyCallback">A callback that will be invoked when the hotkey is pressed.</param>
-        public void Register(Modifiers modifiers, Keys key, HotkeyCallback hotkeyCallback)
+        /// <param name="HotKeyCallback">A callback that will be invoked when the HotKey is pressed.</param>
+        public void Register(Modifiers modifiers, Keys key, HotKeyCallback hotKeyCallback)
         {
+            modifiers.ThrowIfNull("modifiers");
+            key.ThrowIfNull("key");
+            hotKeyCallback.ThrowIfNull("hotKeyCallback");
+
             string keystr = ModifiedKey.ToString(modifiers, key);
             log.Debug("RegisterGlobalHotKey, Hot key = " + keystr);
 
@@ -60,33 +59,58 @@ namespace AutoZilla.Core
             // on the same thread as it was initially created.
             if (MessageLoopForm.InvokeRequired)
             {
-                MessageLoopForm.Invoke(new MethodInvoker(delegate { InternalRegister(modifiers, key, hotkeyCallback); }));
+                MessageLoopForm.Invoke(new MethodInvoker(delegate { InternalRegister(modifiers, key, hotKeyCallback); }));
             }
             else
             {
-                InternalRegister(modifiers, key, hotkeyCallback);
+                InternalRegister(modifiers, key, hotKeyCallback);
             }
 
             log.Debug(keystr + " successfully registered");
         }
 
-        public void Register(ModifiedKey key, HotkeyCallback hotkeyCallback)
+        /// <summary>
+        /// Register a new global hot key. This will throw an exception if the hot
+        /// key is already registered.
+        /// </summary>
+        /// <param name="modifiedKey">The modified key.</param>
+        /// <param name="HotKeyCallback">A callback that will be invoked when the HotKey is pressed.</param>
+        public void Register(ModifiedKey modifiedKey, HotKeyCallback hotKeyCallback)
         {
-            Register(key.Modifiers, key.Key, hotkeyCallback);
+            modifiedKey.ThrowIfNull("modifiedKey");
+
+            hotKeyCallback.ThrowIfNull("hotKeyCallback");
+            Register(modifiedKey.Modifiers, modifiedKey.Key, hotKeyCallback);
         }
 
-        public void Register(Template template)
+        /// <summary>
+        /// Registers a <code>TextTemplate</code> for automatic processing. The template
+        /// must define a <code>ModifiedKey</code> in order to be invoked. An exception
+        /// will be thrown if the key is already registered.
+        /// </summary>
+        /// <param name="textTemplate">The template to register.</param>
+        public void Register(TextTemplate textTemplate)
         {
-            template.ThrowIfNull("template");
-            template.Key.ThrowIfNull("template.Key", String.Format("The template {0} must have a key in order to be auto-invoked.", template.Name));
+            textTemplate.ThrowIfNull("template");
+            textTemplate.ModifiedKey.ThrowIfNull
+                (
+                "template.Key",
+                String.Format(CultureInfo.InvariantCulture, "The template {0} must have a ModifiedKey in order to be auto-invoked.", textTemplate.Name)
+                );
 
-            Register(template.Key, AutoTemplateCallback);
-            AutoTemplates.Add(template);
+            Register(textTemplate.ModifiedKey, AutoTemplateCallback);
+            AutoTemplates.Add(textTemplate);
+        }
+
+        void InternalRegister(Modifiers modifiers, Keys key, HotKeyCallback HotKeyCallback)
+        {
+            var hk = new GlobalHotKey(modifiers, key, MessageLoopForm, HotKeyCallback, true);
+            HotKeys.Add(hk);
         }
 
         void AutoTemplateCallback(ModifiedKey key)
         {
-            var template = AutoTemplates.Single(t => t.Key == key);
+            var template = AutoTemplates.Single(t => t.ModifiedKey == key);
             string replacedText = template.Process();
             TOUT.WaitForModifiersUp();
             TOUT.PasteString(replacedText);
@@ -106,6 +130,9 @@ namespace AutoZilla.Core
         /// <param name="key">The key.</param>
         public void Unregister(Modifiers modifiers, Keys key)
         {
+            modifiers.ThrowIfNull("modifiers");
+            key.ThrowIfNull("key");
+
             log.Debug("UnregisterGlobalHotKey, Hot key = " + ModifiedKey.ToString(modifiers, key));
 
             // For multi-threaded apps, we need to be careful to use the form's handle
@@ -122,38 +149,53 @@ namespace AutoZilla.Core
             log.Debug("Hot key successfully unregistered");
         }
 
-        public void Unregister(ModifiedKey key)
+        /// <summary>
+        /// Unregisters a single global hot key.
+        /// </summary>
+        /// <param name="modifiedKey">The <code>ModifiedKey</code> to unregister.</param>
+        public void Unregister(ModifiedKey modifiedKey)
         {
-            Unregister(key.Modifiers, key.Key);
-        }
+            modifiedKey.ThrowIfNull("key");
 
-        public void Unregister(Template template)
-        {
-            template.ThrowIfNull("template");
-            var ourTemplate = AutoTemplates.Single(t => t.Key == template.Key);
-            if (ourTemplate == null)
-                return;
-            AutoTemplates.Remove(ourTemplate);
-            Unregister(ourTemplate.Key);
+            Unregister(modifiedKey.Modifiers, modifiedKey.Key);
         }
 
         /// <summary>
-        /// Unregisters all hotkeys that were registered by this application. It is not necessary
+        /// Unregisters a template. The method finds the <code>ModifiedKey</code>
+        /// that the template was registered against and unregisters it.
+        /// </summary>
+        /// <param name="textTemplate">The template to unregister.</param>
+        public void Unregister(TextTemplate textTemplate)
+        {
+            textTemplate.ThrowIfNull("template");
+
+            var ourTemplate = AutoTemplates.Single(t => t.ModifiedKey == textTemplate.ModifiedKey);
+            if (ourTemplate == null)
+                return;
+            AutoTemplates.Remove(ourTemplate);
+            Unregister(ourTemplate.ModifiedKey);
+        }
+
+        /// <summary>
+        /// Unregisters all HotKeys that were registered by this application. It is not necessary
         /// to call this in normal circumstances, it will be called automatically when your
         /// application terminates.
         /// </summary>
-        void UnregisterAllHotkeys()
+        void UnregisterAllHotKeys()
         {
-            log.Debug("Enter UnregisterAllHotkeys");
+            log.Debug("Enter UnregisterAllHotKeys");
 
-            foreach (var hk in HotKeys)
+            if (HotKeys != null)
             {
-                hk.Dispose();
+                foreach (var hk in HotKeys)
+                {
+                    hk.Dispose();
+                }
             }
 
             log.Debug("Num Keys unregistered = " + HotKeys.Count); 
             
-            HotKeys = new List<GlobalHotkey>();
+            HotKeys = new List<GlobalHotKey>();
         }
 
         /// <summary>
@@ -163,28 +205,45 @@ namespace AutoZilla.Core
         void MessageLoopForm_HandleDestroyed(object sender, EventArgs e)
         {
             log.Debug("Got MessageLoopForm_HandleDestroyed event.");
-            UnregisterAllHotkeys();
+            UnregisterAllHotKeys();
         }
 
-        ~GlobalHotkeyManager()
+        /// <summary>
+        /// Disposes all managed resources.
+        /// </summary>
+        public void Dispose()
         {
-            log.Debug("Finalizing the GlobalHotkeyManager class.");
-            UnregisterAllHotkeys();
+            UnregisterAllHotKeys(); 
+            if (MessageLoopForm != null)
+            {
+                MessageLoopForm.Dispose();
+            }
+            GC.SuppressFinalize(this);
+        }
+
+        ~GlobalHotKeyManager()
+        {
+            log.Debug("Finalizing the GlobalHotKeyManager class.");
+            UnregisterAllHotKeys();
+            if (MessageLoopForm != null)
+            {
+                MessageLoopForm.Dispose();
+            }
         }
 
         /// <summary>
         /// When a hot key is pressed, find the relevant entry and invoke
         /// its callback so the client can do something.
         /// </summary>
-        void TheForm_HotkeyPressed(object sender, HotkeyPressedEventArgs e)
+        void TheForm_HotKeyPressed(object sender, HotKeyPressedEventArgs e)
         {
-            log.Debug("TheForm_HotkeyPressed, Hot key = " + e.HotkeyInfo.ToString());
-            var hk = FindHotKeyAndThrowIfNotFound(e.HotkeyInfo.Modifiers, e.HotkeyInfo.Key);
-            log.Debug("About to call the hotkey's callback");
-            hk.Callback(e.HotkeyInfo);
+            log.Debug("TheForm_HotKeyPressed, Hot key = " + e.ModifiedKey.ToString());
+            var hk = FindHotKeyAndThrowIfNotFound(e.ModifiedKey.Modifiers, e.ModifiedKey.Key);
+            log.Debug("About to call the HotKey's callback");
+            hk.Callback(e.ModifiedKey);
         }
 
-        GlobalHotkey FindHotKey(Modifiers modifiers, Keys key)
+        GlobalHotKey FindHotKey(Modifiers modifiers, Keys key)
         {
             foreach (var hk in HotKeys)
             {
@@ -197,12 +256,12 @@ namespace AutoZilla.Core
             return null;
         }
 
-        GlobalHotkey FindHotKeyAndThrowIfNotFound(Modifiers modifiers, Keys key)
+        GlobalHotKey FindHotKeyAndThrowIfNotFound(Modifiers modifiers, Keys key)
         {
             var hk = FindHotKey(modifiers, key);
             if (hk == null)
             {
-                var e = new UnknownHotkeyException
+                var e = new UnknownHotKeyException
                     (
                     "Could not find corresponding hot key in list. Application logic error.",
                     modifiers, key

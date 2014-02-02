@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AutoZilla.Core.Extensions;
+using System;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoZilla.Core.Extensions;
-using AutoZilla.Core.Validation;
 using System.Reflection;
-using System.Diagnostics;
 
 namespace AutoZilla.Core.Templates
 {
@@ -49,7 +46,7 @@ namespace AutoZilla.Core.Templates
         {
             get
             {
-                return DomainUser.Before(@"\");
+                return DomainUser.Before(@"\", StringComparison.OrdinalIgnoreCase);
             }
         }
 
@@ -57,7 +54,7 @@ namespace AutoZilla.Core.Templates
         {
             get
             {
-                return DomainUser.After(@"\");
+                return DomainUser.After(@"\", StringComparison.OrdinalIgnoreCase);
             }
         }
 
@@ -84,7 +81,7 @@ namespace AutoZilla.Core.Templates
             var property = MyPropertyByName(name);
             if (property == null)
             {
-                string msg = String.Format("No built-in AutoZilla variable with the name '{0}' exists.", name);
+                string msg = String.Format(CultureInfo.InvariantCulture, "No built-in AutoZilla variable with the name '{0}' exists.", name);
                 throw new ArgumentOutOfRangeException("name", msg);
             }
 
@@ -95,7 +92,7 @@ namespace AutoZilla.Core.Templates
 
         static PropertyInfo MyPropertyByName(string name)
         {
-            return MyProperties.SingleOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            return MyProperties.SingleOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
         static PropertyInfo[] MyProperties

@@ -1,31 +1,49 @@
-﻿using AutoZilla.Core.Validation;
+﻿using AutoZilla.Core.Extensions;
 using System;
 using System.Windows.Forms;
 
-namespace AutoZilla.Core.GlobalHotkeys
+namespace AutoZilla.Core.GlobalHotKeys
 {
-    internal class GlobalHotkey : IDisposable
+    /// <summary>
+    /// Represents a Global Hot Key.
+    /// </summary>
+    internal sealed class GlobalHotKey : IDisposable
     {
+        /// <summary>
+        /// The modifiers that the <code>GlobalHotKey</code> was created with.
+        /// </summary>
         public Modifiers Modifier { get; private set; }
-        public int Key { get; private set; }
-        public int Id { get; private set; }
-        public HotkeyCallback Callback { get; private set; }
 
-        readonly IntPtr hWnd;
+        /// <summary>
+        /// The key code that the <code>GlobalHotKey</code> was created with.
+        /// </summary>
+        public int Key { get; private set; }
+
+        /// <summary>
+        /// Internal identifier of the <code>GlobalHotKey</code>.
+        /// </summary>
+        public int Id { get; private set; }
+
+        /// <summary>
+        /// Delegate to be called when the <code>GlobalHotKey</code> is pressed.
+        /// </summary>
+        public HotKeyCallback Callback { get; private set; }
+
+        IntPtr hWnd;
         bool registered;
 
         /// <summary>
-        /// Creates a GlobalHotkey object.
+        /// Creates a GlobalHotKey object.
         /// </summary>
-        /// <param name="modifier">Hotkey modifier keys</param>
-        /// <param name="key">Hotkey</param>
-        /// <param name="window">The Window that the hotkey should be registered to</param>
-        /// <param name="callback">The delegate to call when the hotkey is pressed.</param>
+        /// <param name="modifier">HotKey modifier keys</param>
+        /// <param name="key">HotKey</param>
+        /// <param name="window">The Window that the HotKey should be registered to</param>
+        /// <param name="callback">The delegate to call when the HotKey is pressed.</param>
         /// <param name="registerImmediately"> </param>
-        public GlobalHotkey(Modifiers modifier, Keys key, IWin32Window window, HotkeyCallback callback, bool registerImmediately = false)
+        public GlobalHotKey(Modifiers modifier, Keys key, IWin32Window window, HotKeyCallback callback, bool registerImmediately = false)
         {
-            window.ThrowIfNull("window", "You must provide a form or window to register the hotkey against.");
-            callback.ThrowIfNull("callback", "You must specify a callback in order to do some useful work when your hotkey is pressed.");
+            window.ThrowIfNull("window", "You must provide a form or window to register the HotKey against.");
+            callback.ThrowIfNull("callback", "You must specify a callback in order to do some useful work when your HotKey is pressed.");
 
             Modifier = modifier;
             Key = (int)key;
@@ -38,41 +56,46 @@ namespace AutoZilla.Core.GlobalHotkeys
         }
 
         /// <summary>
-        /// Registers the current hotkey with Windows.
-        /// Note! You must override the WndProc method in your window that registers the hotkey,
-        /// or you will not receive any hotkey notifications.
+        /// Registers the current HotKey with Windows.
+        /// Note! You must override the WndProc method in your window that registers the HotKey,
+        /// or you will not receive any HotKey notifications.
         /// </summary>
         public void Register()
         {
             if (!NativeMethods.RegisterHotKey(hWnd, Id, (int)Modifier, Key))
-                throw new GlobalHotkeyException("Hotkey failed to register.");
+                throw new GlobalHotKeyException("HotKey failed to register.");
             registered = true;
         }
 
         /// <summary>
-        /// Unregisters the current hotkey with Windows.
+        /// Unregisters the current HotKey with Windows.
         /// </summary>
         public void Unregister()
         {
             if (!registered) return;
             if (!NativeMethods.UnregisterHotKey(hWnd, Id))
-                throw new GlobalHotkeyException("Hotkey failed to unregister.");
+                throw new GlobalHotKeyException("HotKey failed to unregister.");
             registered = false;
         }
 
-        #region IDisposable Members / Finalizer
+        /// <summary>
+        /// Disposes the hot key by unregistering it.
+        /// </summary>
         public void Dispose()
         {
             Unregister();
             GC.SuppressFinalize(this);
         }
 
-        ~GlobalHotkey()
+        ~GlobalHotKey()
         {
             Unregister();
         }
-        #endregion
 
+        /// <summary>
+        /// Returns the hash code of the hot key.
+        /// </summary>
+        /// <returns>Hash code.</returns>
         public override sealed int GetHashCode()
         {
             return (int)Modifier ^ Key ^ hWnd.ToInt32();
