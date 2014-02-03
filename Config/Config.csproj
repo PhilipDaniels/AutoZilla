@@ -71,11 +71,134 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
+  <PropertyGroup>
+    <!-- Define some variables to hold the filenames of the Xsl transforms -->
+    <ConfigFolder>$(SolutionDir)Config\</ConfigFolder>
+    <TransformTemplate>$(ConfigFolder)Transform.template.xsl</TransformTemplate>
+    <TransformMerged>$(ConfigFolder)Transform.xsl</TransformMerged>
+    <DocComment>Built from configuration '$(Configuration)' on machine $(ComputerName) by $(UserName) at $([System.DateTime]::Now)</DocComment>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- This group gathers all the individual Xsl transforms for the current configuration -->
+    <InputXslFiles Include="$(ConfigFolder)\Transforms\**\*.$(Configuration).xsl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- This group gathers all the individual Xsl transforms for the current configuration -->
+    <InputXslFiles Include="$(ConfigFolder)\Transforms\**\*.$(Configuration).xsl" />
+  </ItemGroup>
+  
   <Target Name="BeforeBuild">
+    <!-- Do we have Git? -->
+    <GitInfo GitExe="C:\Program Files (x86)\Git\bin\git.exe">
+      <Output PropertyName="Branch" TaskParameter="Branch" />
+      <Output PropertyName="CommitHash" TaskParameter="CommitHash" />
+    </GitInfo>
+
+    <PropertyGroup>
+      <DocComment Condition="'$(Branch)'==''">$(DocComment)</DocComment>
+      <DocComment Condition="'$(Branch)'!=''">$(DocComment)%0D%0A     from Git commit $(CommitHash) on branch $(Branch)</DocComment>
+    </PropertyGroup>
+
+    <!-- First amalgamate all the individual transforms into one big Xsl file -->
+    <CreateTransformXsl TransformTemplate="$(TransformTemplate)" TransformMerged="$(TransformMerged)" InputXslFiles="@(InputXslFiles)"
+                        DocumentComment="$(DocComment)"
+                        />
   </Target>
   <Target Name="AfterBuild">
   </Target>
-  -->
+
+  <UsingTask TaskName="CreateTransformXsl" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+    <!-- This task amalgamates all the individual xsl sheets into one big sheet -->
+    <ParameterGroup>
+      <TransformTemplate ParameterType="System.String" Required="true" />
+      <TransformMerged ParameterType="System.String" Required="true" />
+      <InputXslFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <DocumentComment ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System"/>
+      <Using Namespace="System.IO"/>
+      <Using Namespace="System.Text"/>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            Log.LogMessage("CreateTransformXsl: Creating " + TransformMerged + " from " + TransformTemplate, MessageImportance.Normal);
+            string inputFile = File.ReadAllText(TransformTemplate);
+            var sb = new StringBuilder();
+            foreach (var file in InputXslFiles)
+            {
+              var path = file.GetMetadata("FullPath");
+              path = path.Replace("\\", "/");
+              sb.AppendFormat("  <xsl:include href=\"{0}\" />", path);
+              sb.AppendLine();
+            }
+            inputFile = inputFile.Replace("<!-- @@Includes -->", sb.ToString());
+            inputFile = inputFile.Replace("@@Comment", DocumentComment);
+            File.WriteAllText(TransformMerged, inputFile);
+            return true;
+  ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <UsingTask TaskName="GitInfo" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+    <ParameterGroup>
+      <GitExe ParameterType="System.String" Required="true" />
+      <Branch ParameterType="System.String" Output="True" />
+      <CommitHash ParameterType="System.String" Output="True" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System"/>
+      <Using Namespace="System.Diagnostics"/>
+      <Using Namespace="System.IO"/>
+      <Using Namespace="System.Text"/>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            Log.LogMessage("GitInfo: Getting git info", MessageImportance.Normal);
+            
+            try 
+            {
+              ProcessStartInfo gitInfo = new ProcessStartInfo();
+              gitInfo.CreateNoWindow = true;
+              gitInfo.RedirectStandardError = true;
+              gitInfo.RedirectStandardOutput = true;
+              gitInfo.FileName = GitExe;
+              gitInfo.UseShellExecute = false;
+            
+            
+              Process gitProcess = new Process();
+              gitInfo.Arguments = "symbolic-ref --short head";
+              //gitInfo.WorkingDirectory = YOUR_GIT_REPOSITORY_PATH;
+              gitProcess.StartInfo = gitInfo;
+              gitProcess.Start();
+              string stderr_str = gitProcess.StandardError.ReadToEnd();
+              string stdout_str = gitProcess.StandardOutput.ReadToEnd();
+              gitProcess.WaitForExit();
+              gitProcess.Close();
+              Branch = stdout_str.Replace("\r", "").Replace("\n", "");
+            
+              gitProcess = new Process();
+              gitInfo.Arguments = "show -s --pretty=format:%H";
+              //gitInfo.WorkingDirectory = YOUR_GIT_REPOSITORY_PATH;
+              gitProcess.StartInfo = gitInfo;
+              gitProcess.Start();
+              stderr_str = gitProcess.StandardError.ReadToEnd();
+              stdout_str = gitProcess.StandardOutput.ReadToEnd();
+              gitProcess.WaitForExit();
+              gitProcess.Close();
+              CommitHash = stdout_str.Replace("\r", "").Replace("\n", "");
+            }
+            catch
+            {
+              CommitHash = "";
+              Branch = "";
+            }
+            
+            string msg = String.Format("GitInfo: Returning commit hash of {0} on branch {1}", CommitHash, Branch);
+            Log.LogMessage(msg, MessageImportance.Normal);
+  ]]>
+      </Code>
+    </Task>
+  </UsingTask>
 </Project>
