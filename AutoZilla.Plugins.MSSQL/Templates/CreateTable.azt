@@ -1,0 +1,18 @@
+﻿[Config]
+Key:
+Name: Create Table
+Description: Create a new table with properly named PK and Natural Key index.
+
+;;AZ;;
+IF OBJECT_ID('${TABLENAME}', 'U') IS NOT NULL BEGIN
+    PRINT 'Dropping table ${TABLENAME}';
+    EXEC('DROP TABLE ${TABLENAME}');
+END
+CREATE TABLE ${TABLENAME}
+    (
+    ID INT NOT NULL,
+    NAME NVARCHAR(50) NOT NULL
+    );
+ALTER TABLE ${TABLENAME} ADD CONSTRAINT ${PKNAME} PRIMARY KEY CLUSTERED([ID] ASC);
+CREATE UNIQUE NONCLUSTERED INDEX ${NKNAME} ON ${TABLENAME} (NAME ASC);
+GO

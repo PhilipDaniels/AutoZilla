@@ -141,6 +141,11 @@ namespace AutoZilla.Core.Templates
                 templateBody = templateBody.TrimOneLeadingNewLine();
 
                 var t = new TextTemplate(config.Key, config.Name, config.Description, templateFilePath, templateBody);
+                log.DebugFormat
+                    (
+                    "Successfully loaded template from {0}",
+                    templateFilePath == null ? "a string" : templateFilePath
+                    );
                 return t;
             }
             catch (Exception ex)

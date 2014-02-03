@@ -15,6 +15,7 @@ namespace AutoZilla
         NotifyIcon TrayIcon;
         MainForm TheMainForm;
         AutoTemplateManager AutoTemplateManager;
+        PluginManager PluginManager;
 
         public ApplicationContextWithNotifyIcon()
         {
@@ -31,6 +32,8 @@ namespace AutoZilla
             TheMainForm = new MainForm();
             AutoTemplateManager = new AutoTemplateManager();
             AutoTemplateManager.BeginWatching();
+            PluginManager = new PluginManager();
+            PluginManager.LoadAllPlugins();
         }
 
         ContextMenu GetContextMenu()

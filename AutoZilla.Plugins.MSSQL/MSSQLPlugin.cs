@@ -18,8 +18,10 @@ namespace AutoZilla.Plugins.MSSQL
         static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         IGlobalHotKeyManager HKM;
         TextOutputter TOUT = new TextOutputter();
+        string TemplateFolder; 
+        
         TextTemplate HeaderCommentTemplate;
-        string TemplateFolder;
+        TextTemplate CreateTableTemplate;
 
         public void InitialiseHotKeyManager(IGlobalHotKeyManager manager)
         {
@@ -53,6 +55,8 @@ namespace AutoZilla.Plugins.MSSQL
         {
             HeaderCommentTemplate = TemplateLoader.LoadTemplate(Path.Combine(TemplateFolder, "HeaderComment.azt"));
             HKM.Register(HeaderCommentTemplate.ModifiedKey, OutputHeaderComment);
+
+            CreateTableTemplate = TemplateLoader.LoadTemplate(Path.Combine(TemplateFolder, "CreateTable.azt"));
         }
 
         void OutputHeaderComment(ModifiedKey key)
