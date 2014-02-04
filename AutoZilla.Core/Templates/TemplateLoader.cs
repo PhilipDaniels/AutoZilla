@@ -157,6 +157,27 @@ namespace AutoZilla.Core.Templates
 
         static TemplateConfig ParseTemplateConfig(string templateFilePath, string azConfig)
         {
+            var ini = new IniParser(azConfig, true);
+            string hotKey = ini.GetValue("Config", "Key");
+
+            ModifiedKey modifiedKey = null;
+            if (!String.IsNullOrWhiteSpace(hotKey))
+            {
+                if (!ModifiedKey.TryParse(hotKey, out modifiedKey))
+                {
+                    var msg = String.Format(CultureInfo.InvariantCulture, "The modified key specification {0} in template {1} is invalid.", hotKey, templateFilePath);
+                    throw new TemplateFormatException(msg);
+                }
+            }
+
+            var result = new TemplateConfig();
+            result.Key = modifiedKey;
+            result.Name = ini.GetValue("Config", "Name");
+            result.Description = ini.GetValue("Config", "Description");
+
+            return result;
+
+            /*
             using (var rdr = new StringReader(azConfig))
             {
                 var doc = new IniDocument(rdr, IniFileType.PythonStyle);
@@ -183,6 +204,7 @@ namespace AutoZilla.Core.Templates
 
                 return result;
             }
+            */
         }
 
         /// <summary>

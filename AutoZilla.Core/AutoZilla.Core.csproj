@@ -34,9 +34,6 @@
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Nini">
-      <HintPath>..\packages\Trove.Nini.1.1.0.0\lib\net20\Nini.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -67,6 +64,7 @@
     <Compile Include="IAutoZillaPlugin.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Templates\AutoZillaVariables.cs" />
+    <Compile Include="Templates\IniParser.cs" />
     <Compile Include="Templates\VariableReplacementEventArgs.cs" />
     <Compile Include="Templates\TemplateFormatException.cs" />
     <Compile Include="Templates\TextTemplate.cs" />
@@ -93,6 +91,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\ParameterValidators.cs" />
     <Compile Include="Extensions\ValidatedNotNullAttribute.cs" />
+    <Compile Include="WinForms\AutoTemplateButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WinForms\WinFormsHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

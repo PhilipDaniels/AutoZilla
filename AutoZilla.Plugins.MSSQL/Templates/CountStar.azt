@@ -1,7 +1,9 @@
 ﻿[Config]
-Key: CA-D
-Name: SELECT COUNT(*)
-Description: Inserts "SELECT COUNT(*) FROM "
+Key = CA-D
+Name = SELECT COUNT(*)
+Description = Inserts "SELECT COUNT(*) FROM ..." \
+which is a cool way of doing \
+multiple lines
   
 ;;AZ;; 
 SELECT COUNT(*) FROM 

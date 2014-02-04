@@ -18,10 +18,11 @@ namespace AutoZilla.Plugins.MSSQL
         static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         IGlobalHotKeyManager HKM;
         TextOutputter TOUT = new TextOutputter();
-        string TemplateFolder; 
-        
+        string TemplateFolder;
+        List<TextTemplate> AutoTemplates;
         TextTemplate HeaderCommentTemplate;
         TextTemplate CreateTableTemplate;
+        MainForm MainForm;
 
         public void InitialiseHotKeyManager(IGlobalHotKeyManager manager)
         {
@@ -29,8 +30,10 @@ namespace AutoZilla.Plugins.MSSQL
             log.Debug("Initialising MSSQLPlugin.");
 
             TemplateFolder = TemplateLoader.GetDefaultTemplateFolder(Assembly.GetExecutingAssembly());
+            AutoTemplates = new List<TextTemplate>();
             LoadAutoTemplates();
             LoadCustomTemplates();
+            HKM.Register(Modifiers.Ctrl | Modifiers.Shift, Keys.P, ShowMainForm);
         }
 
         void LoadAutoTemplates()
@@ -47,6 +50,7 @@ namespace AutoZilla.Plugins.MSSQL
             var template = TemplateLoader.LoadTemplate(templateFilePath);
             if (template != null)
             {
+                AutoTemplates.Add(template);
                 HKM.Register(template);
             }
         }
@@ -67,6 +71,21 @@ namespace AutoZilla.Plugins.MSSQL
             TOUT.PasteString(text).
                 Move(-9, 3).
                 SelectToEndOfLine();
+        }
+
+        void ShowMainForm(ModifiedKey key)
+        {
+            // Ensure form only shown once.
+            if (MainForm != null)
+                return;
+
+            using (var f = new MainForm())
+            {
+                MainForm = f;
+                f.AutoTemplates = AutoTemplates;
+                f.ShowDialog();
+                MainForm = null;
+            }
         }
     }
 }

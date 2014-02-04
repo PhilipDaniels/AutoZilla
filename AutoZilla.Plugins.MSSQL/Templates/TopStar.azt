@@ -1,7 +1,7 @@
 ﻿[Config]
-Key: CA-S
-Name: SELECT TOP 10 *
-Description: Inserts "SELECT TOP 10 * FROM "
+Key = CA-S
+Name = SELECT TOP 10 *
+Description = Inserts "SELECT TOP 10 * FROM "
   
 ;;AZ;; 
 SELECT TOP 10 * FROM 

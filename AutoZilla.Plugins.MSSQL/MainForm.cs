@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutoZilla.Core.Templates;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,9 +13,21 @@ namespace AutoZilla.Plugins.MSSQL
 {
     public partial class MainForm : Form
     {
+        public List<TextTemplate> AutoTemplates { get; set; }
+
         public MainForm()
         {
             InitializeComponent();
+            AutoTemplates = new List<TextTemplate>();
+            Load += MainForm_Load;
+        }
+
+        void MainForm_Load(object sender, EventArgs e)
+        {
+            if (AutoTemplates != null && AutoTemplates.Count > 0)
+            {
+                autoTemplateButton1.TextTemplate = AutoTemplates[0];
+            }
         }
     }
 }
