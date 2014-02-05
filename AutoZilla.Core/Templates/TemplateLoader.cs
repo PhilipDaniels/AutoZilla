@@ -1,7 +1,5 @@
 ﻿using AutoZilla.Core.Extensions;
 using AutoZilla.Core.GlobalHotKeys;
-using Nini.Config;
-using Nini.Ini;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -176,35 +174,6 @@ namespace AutoZilla.Core.Templates
             result.Description = ini.GetValue("Config", "Description");
 
             return result;
-
-            /*
-            using (var rdr = new StringReader(azConfig))
-            {
-                var doc = new IniDocument(rdr, IniFileType.PythonStyle);
-                var source = new IniConfigSource(doc);
-                var config = source.Configs["Config"];
-                source.CaseSensitive = false;
-
-                string HotKey = config.Get("Key");
-
-                ModifiedKey modifiedKey = null;
-                if (!String.IsNullOrWhiteSpace(HotKey))
-                {
-                    if (!ModifiedKey.TryParse(HotKey, out modifiedKey))
-                    {
-                        var msg = String.Format(CultureInfo.InvariantCulture, "The modified key specification {0} in template {1} is invalid.", HotKey, templateFilePath);
-                        throw new TemplateFormatException(msg);
-                    }
-                }
-
-                var result = new TemplateConfig();
-                result.Key = modifiedKey;
-                result.Name = config.Get("Name");
-                result.Description = config.Get("Description");
-
-                return result;
-            }
-            */
         }
 
         /// <summary>
