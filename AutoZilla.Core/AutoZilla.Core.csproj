@@ -94,6 +94,9 @@
     <Compile Include="WinForms\AutoTemplateButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="WinForms\FocusRestoringForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="WinForms\WinFormsHelpers.cs" />
   </ItemGroup>
   <ItemGroup>

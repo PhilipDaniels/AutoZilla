@@ -17,6 +17,8 @@ namespace AutoZilla.Core.WinForms
     /// </summary>
     public class AutoTemplateButton : Button
     {
+        TextOutputter TOUT = new TextOutputter();
+
         public TextTemplate TextTemplate
         {
             get
@@ -56,5 +58,20 @@ namespace AutoZilla.Core.WinForms
         }
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         TextTemplate textTemplate;
+
+        protected override void OnClick(EventArgs e)
+        {
+            base.OnClick(e);
+            if (textTemplate != null)
+            {
+                string replacedText = textTemplate.Process();
+                var form = FindForm() as FocusRestoringForm;
+                if (form != null)
+                {
+                    TOUT.WaitForModifiersUp(); 
+                    form.SendToLastWindow(replacedText);
+                }
+            }
+        }
     }
 }

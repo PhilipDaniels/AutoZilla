@@ -34,6 +34,14 @@ namespace AutoZilla.Core.WinForms
                    select component;
         }
 
+        /// <summary>
+        /// Finds the ToolTip control for a control. Examines the control,
+        /// finds its form, then returns the ToolTip on that form, if
+        /// there is one (null can be returned). Assumes that there is
+        /// only one ToolTip control on the form.
+        /// </summary>
+        /// <param name="control">Control to get ToolTip for. This can be a form itself.</param>
+        /// <returns>A reference to the ToolTip control on the form, if there is one.</returns>
         public static ToolTip GetToolTipControl(this Control control)
         {
             control.ThrowIfNull("control");

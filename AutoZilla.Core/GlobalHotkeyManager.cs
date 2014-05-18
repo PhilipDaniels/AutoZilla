@@ -23,6 +23,8 @@ namespace AutoZilla.Core
 
         public GlobalHotKeyManager()
         {
+            log.Debug("Creating a new GlobalHotKeyManager.");
+
             HotKeys = new List<GlobalHotKey>();
             AutoTemplates = new List<TextTemplate>();
             TOUT = new TextOutputter();

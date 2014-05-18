@@ -1,4 +1,6 @@
-﻿using AutoZilla.Core.Templates;
+﻿using AutoZilla.Core;
+using AutoZilla.Core.Templates;
+using AutoZilla.Core.WinForms;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,7 +13,7 @@ using System.Windows.Forms;
 
 namespace AutoZilla.Plugins.MSSQL
 {
-    public partial class MainForm : Form
+    public partial class MainForm : FocusRestoringForm
     {
         public List<TextTemplate> AutoTemplates { get; set; }
 
