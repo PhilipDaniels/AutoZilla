@@ -1,0 +1,41 @@
+﻿<summary>
+<remarks>
+
+Cross References
+===============
+<seealso cref="SomeMethodOrType"/>
+
+These go into the XML doc as a cross-ref.
+No text is needed other than the name of the thing.
+
+Exceptions
+==========
+<exception cref="ArgumentNullException">when raised</exception>
+
+Comes after the <params> block and before <returns>
+
+Examples
+========
+<example>
+<code>
+</code>
+</example>
+
+
+Supporting Tags
+===============
+The <c> tag marks a line of text as code. It is usually used inline in
+descriptive text.
+   <code> is used for blocks of code.
+
+<paramref> is used to refer to parameters in your comment.
+
+
+The <see> tag is used within the text of other comment tags to specify a
+hyperlink. It is used inline as part of the text and usually just includes one
+attribute, cref:
+
+/// One of the associated member functions (<see
+/// cref="GiveTypeListHTMLHelp"/>,
+/// <see cref="GiveMemberListHTMLHelp"/>, <see
+/// cref="GiveMemberHTMLHelp"/>)
