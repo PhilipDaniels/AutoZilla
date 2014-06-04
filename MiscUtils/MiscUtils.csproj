@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5C796F83-BB37-4012-981C-F3CE36AE6681}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MiscUtils</RootNamespace>
+    <AssemblyName>MiscUtils</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>..\..\DataWrangler\MyCodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\Conv.cs" />
+    <Compile Include="Data\DataGridViewReader.cs" />
+    <Compile Include="Data\DataRowExtensions.cs" />
+    <Compile Include="Data\DataSetExtensions.cs" />
+    <Compile Include="Data\DataTableExtensions.cs" />
+    <Compile Include="Data\DataViewExtensions.cs" />
+    <Compile Include="Data\ObjectDataReader.cs" />
+    <Compile Include="Data\IDataRecordExtensions.cs" />
+    <Compile Include="Data\SqlConnectionExtensions.cs" />
+    <Compile Include="Data\SqlName.cs" />
+    <Compile Include="Data\SqlParameterCollectionExtensions.cs" />
+    <Compile Include="Data\ValidatingDataReader.cs" />
+    <Compile Include="Framework\Alignment.cs" />
+    <Compile Include="Framework\AssemblyExtensions.cs" />
+    <Compile Include="Data\IDataParameterExtensions.cs" />
+    <Compile Include="Data\IDataReaderExtensions.cs" />
+    <Compile Include="Data\NullDataReader.cs" />
+    <Compile Include="Data\SqlBulkCopyExtensions.cs" />
+    <Compile Include="Data\TableAdapterBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Framework\CanonicalEvent.cs" />
+    <Compile Include="Framework\CanonicalException.cs" />
+    <Compile Include="Framework\Comb.cs" />
+    <Compile Include="Data\SchemaException.cs" />
+    <Compile Include="Framework\CursorKeeper.cs" />
+    <Compile Include="Framework\DateTimeExtensions.cs" />
+    <Compile Include="Framework\DisposableBaseType.cs" />
+    <Compile Include="Framework\DoubleExtensions.cs" />
+    <Compile Include="Framework\EncodingHelper.cs" />
+    <Compile Include="Framework\EncodingStringWriter.cs" />
+    <Compile Include="Framework\FileSystem.cs" />
+    <Compile Include="Framework\IEnumerableExtensions.cs" />
+    <Compile Include="Framework\IndentingStringBuilder.cs" />
+    <Compile Include="Framework\IniParser.cs" />
+    <Compile Include="Framework\IObjectValidator.cs" />
+    <Compile Include="Framework\log4netExtensions.cs" />
+    <Compile Include="Framework\MutableThreadSafeCollection.cs" />
+    <Compile Include="Framework\ObjectExtensions.cs" />
+    <Compile Include="Framework\ObjectValidator.cs" />
+    <Compile Include="Framework\Pair.cs" />
+    <Compile Include="Framework\PredicateBuilder.cs" />
+    <Compile Include="Framework\SerializationHelper.cs" />
+    <Compile Include="Framework\SortedCollection.cs" />
+    <Compile Include="Framework\StreamExtensions.cs" />
+    <Compile Include="Framework\StringExtensions.cs" />
+    <Compile Include="Framework\ThrottledBlockingQueue.cs" />
+    <Compile Include="Framework\XmlWriterExtensions.cs" />
+    <Compile Include="Data\IDbConnectionExtensions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Framework\ArgumentValidators.cs" />
+    <Compile Include="Framework\ValidatedNotNullAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Commenting Standards.txt" />
+    <Content Include="Data\dbo.UserContext.sql" />
+    <Content Include="Data\SetContextInfo.sql" />
+    <Content Include="Data\GetAllContextInfo.sql" />
+    <Content Include="Data\GetContextInfo.sql" />
+    <Content Include="Naming Standards.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

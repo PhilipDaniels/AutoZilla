@@ -1,0 +1,40 @@
+﻿Private fields		: camelCase
+Parameters			: camelCase
+Local variables		: camelCase
+Disambiguation		: this.camelCase = camelCase
+Constants			: PascalCased (public, private whatever)
+    Only use constants for things that will never change ("fixed in the real universe")
+    because they get baked into the call site by the compiler. For other things, use
+    a "public static readonly string ..."
+
+
+FileName, PathName, xxxDirectory
+fileName, pathName
+
+
+Various types of classes: http://msdn.microsoft.com/en-us/library/ms182244.aspx
+===============================================================================
+Collection Classes  : SomethingCollection
+Delegate Classes	: SomethingDelegate
+Exception Classes	: SomethingException (see CanonicalException)
+Atrribute Classes	: SomethingAttribute
+Flag enums			: SomethingOptions (plural end)
+
+
+General names of things
+	Type type
+	object value
+	string str
+	string value (as used in String.IsNullOrEmpty() for example).
+	bool readOnly
+
+	IEnumerable<T> collection, or a plural such as parameters
+
+	sourceXXX, destinationXXX (to express a move or copy operation)
+	TextWriter writer
+
+	IDataParameter parameter
+	IDataReader reader (in parameters, use rdr for variables)
+	IDbConnection connection
+
+	Func<IDataRecord, T> hydrationFunction
