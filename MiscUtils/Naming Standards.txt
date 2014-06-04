@@ -38,3 +38,5 @@ General names of things
 	IDbConnection connection
 
 	Func<IDataRecord, T> hydrationFunction
+
+Doc change to test subtreees.
