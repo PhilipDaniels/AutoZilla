@@ -1,11 +1,8 @@
-﻿using AutoZilla.Core.Extensions;
-using AutoZilla.Core.Templates;
+﻿using AutoZilla.Core.Templates;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MiscUtils.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AutoZilla.Core.Tests.Templates
 {

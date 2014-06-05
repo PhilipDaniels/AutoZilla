@@ -51,10 +51,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Extensions\BeforeAndAfterTests.cs" />
     <Compile Include="GlobalHotKeys\ModifiedKeyTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Extensions\PadAndAlignTests.cs" />
     <Compile Include="Templates\AutoZillaVariableTests.cs" />
     <Compile Include="Templates\TemplateLoaderTests.cs" />
     <Compile Include="Templates\TemplateTests.cs" />
@@ -65,6 +63,10 @@
     <ProjectReference Include="..\AutoZilla.Core\AutoZilla.Core.csproj">
       <Project>{0e688808-cf82-4376-85b5-e42883230455}</Project>
       <Name>AutoZilla.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MiscUtils\MiscUtils\MiscUtils.csproj">
+      <Project>{5c796f83-bb37-4012-981c-f3ce36ae6681}</Project>
+      <Name>MiscUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

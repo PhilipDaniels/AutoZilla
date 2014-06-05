@@ -1,5 +1,6 @@
 ﻿using AutoZilla.Core.Templates;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MiscUtils.Framework;
 using System;
 
 namespace AutoZilla.Core.Tests.Templates

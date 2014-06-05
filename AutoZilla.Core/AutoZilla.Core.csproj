@@ -50,10 +50,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions\Enum.cs" />
     <Compile Include="GlobalHotkeys\GlobalHotKeyCallback.cs" />
     <Compile Include="IGlobalHotKeyManager.cs" />
-    <Compile Include="Templates\Alignment.cs" />
     <Compile Include="BadModifierStateException.cs" />
     <Compile Include="GlobalHotkeys\GlobalHotKey.cs" />
     <Compile Include="GlobalHotkeys\GlobalHotKeyException.cs" />
@@ -62,9 +60,7 @@
     <Compile Include="GlobalHotkeys\ModifiersHelper.cs" />
     <Compile Include="GlobalHotkeys\NativeMethods.cs" />
     <Compile Include="IAutoZillaPlugin.cs" />
-    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Templates\AutoZillaVariables.cs" />
-    <Compile Include="Templates\IniParser.cs" />
     <Compile Include="Templates\VariableReplacementEventArgs.cs" />
     <Compile Include="Templates\TemplateFormatException.cs" />
     <Compile Include="Templates\TextTemplate.cs" />
@@ -89,8 +85,6 @@
       <DependentUpon>MessageLoopForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Extensions\ParameterValidators.cs" />
-    <Compile Include="Extensions\ValidatedNotNullAttribute.cs" />
     <Compile Include="WinForms\AutoTemplateButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -119,6 +113,10 @@
     <ProjectReference Include="..\ConfigZilla\ConfigZilla.csproj">
       <Project>{93422D3E-17DB-4EF8-9027-E1FCE2735F00}</Project>
       <Name>ConfigZilla</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MiscUtils\MiscUtils\MiscUtils.csproj">
+      <Project>{5c796f83-bb37-4012-981c-f3ce36ae6681}</Project>
+      <Name>MiscUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

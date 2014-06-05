@@ -1,6 +1,6 @@
-﻿using AutoZilla.Core.Extensions;
-using AutoZilla.Core.GlobalHotKeys;
+﻿using AutoZilla.Core.GlobalHotKeys;
 using AutoZilla.Core.Templates;
+using MiscUtils.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

@@ -1,9 +1,7 @@
-﻿using AutoZilla.Core.Extensions;
-using AutoZilla.Core.GlobalHotKeys;
+﻿using MiscUtils.Framework;
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using System.Windows.Forms;
 
 namespace AutoZilla.Core.Templates
 {
