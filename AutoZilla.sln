@@ -2,11 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoZilla.Core", "AutoZilla.Core\AutoZilla.Core.csproj", "{0E688808-CF82-4376-85B5-E42883230455}"
-	ProjectSection(ProjectDependencies) = postProject
-		{4FEBF624-EAB7-4054-A72C-CD5EB7766488} = {4FEBF624-EAB7-4054-A72C-CD5EB7766488}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Config", "Config\Config.csproj", "{4FEBF624-EAB7-4054-A72C-CD5EB7766488}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoZilla.Demo1", "AutoZilla.Demo1\AutoZilla.Demo1.csproj", "{D5CDA5CE-FFE4-4DC6-89FA-669A8A1D97E9}"
 EndProject
@@ -15,7 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoZilla.Core.Tests", "AutoZilla.Core.Tests\AutoZilla.Core.Tests.csproj", "{0B517C6F-54ED-4932-914B-D065733903BD}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0E688808-CF82-4376-85B5-E42883230455} = {0E688808-CF82-4376-85B5-E42883230455}
-		{4FEBF624-EAB7-4054-A72C-CD5EB7766488} = {4FEBF624-EAB7-4054-A72C-CD5EB7766488}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{12D50838-137B-47C5-AF8F-F69E3E521424}"
@@ -37,10 +31,6 @@ Global
 		{0E688808-CF82-4376-85B5-E42883230455}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E688808-CF82-4376-85B5-E42883230455}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E688808-CF82-4376-85B5-E42883230455}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4FEBF624-EAB7-4054-A72C-CD5EB7766488}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4FEBF624-EAB7-4054-A72C-CD5EB7766488}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4FEBF624-EAB7-4054-A72C-CD5EB7766488}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4FEBF624-EAB7-4054-A72C-CD5EB7766488}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D5CDA5CE-FFE4-4DC6-89FA-669A8A1D97E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D5CDA5CE-FFE4-4DC6-89FA-669A8A1D97E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5CDA5CE-FFE4-4DC6-89FA-669A8A1D97E9}.Release|Any CPU.ActiveCfg = Release|Any CPU

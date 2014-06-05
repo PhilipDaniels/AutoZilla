@@ -119,14 +119,7 @@
   <ItemGroup>
     <Content Include="GlobalHotkeys\readme.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Config\Config.csproj">
-      <Project>{4febf624-eab7-4054-a72c-cd5eb7766488}</Project>
-      <Name>Config</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\Config\Config.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
