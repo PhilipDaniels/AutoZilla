@@ -60,6 +60,10 @@
       <Project>{0e688808-cf82-4376-85b5-e42883230455}</Project>
       <Name>AutoZilla.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ConfigZilla\ConfigZilla.csproj">
+      <Project>{93422D3E-17DB-4EF8-9027-E1FCE2735F00}</Project>
+      <Name>ConfigZilla</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -105,4 +109,5 @@
     <Copy SourceFiles="$(TargetPath).config" DestinationFolder="$(SolutionDir)\AutoZilla\bin\$(Configuration)\Plugins\$(ProjectName)" />
     <Copy SourceFiles="@(MyTemplates)" DestinationFolder="$(SolutionDir)\AutoZilla\bin\$(Configuration)\Plugins\$(ProjectName)\Templates" />
   </Target>
+  <Import Project="..\packages\ConfigZilla.2.0.1\build\ConfigZilla.targets" Condition="Exists('..\packages\ConfigZilla.2.0.1\build\ConfigZilla.targets')" />
 </Project>

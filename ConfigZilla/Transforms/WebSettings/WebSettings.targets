@@ -1,0 +1,12 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <!-- No condition and processed first means this Property Group specifies the defaults -->
+    <wsDebugFlag>true</wsDebugFlag>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <wsDebugFlag>false</wsDebugFlag>
+  </PropertyGroup>
+  
+</Project>

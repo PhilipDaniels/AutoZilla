@@ -1,0 +1,14 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <!-- No condition and processed first means this Property Group specifies the defaults -->
+    <csConnStr1>Data Source=localhost;Initial Catalog=Db1;Integrated Security=True;</csConnStr1>
+    <csConnStr2>Data Source=localhost;Initial Catalog=Db2;Integrated Security=True;</csConnStr2>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <csConnStr1>Data Source=PRDSQL;Initial Catalog=Db1;Integrated Security=True;</csConnStr1>
+    <csConnStr2>Data Source=PRDSQL;Initial Catalog=Db2;Integrated Security=True;</csConnStr2>
+  </PropertyGroup>
+  
+</Project>

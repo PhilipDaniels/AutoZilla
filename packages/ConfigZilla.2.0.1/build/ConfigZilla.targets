@@ -1,0 +1,231 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- This targets file is the one that is included in your .csproj (down the bottom of the file)
+       when you add ConfigZilla to a project using NuGet. 
+       It is evaluated in the context of project X. -->
+
+
+  <!-- Import custom tasks from our DLL. -->
+  <UsingTask AssemblyFile="ConfigZilla.Tasks.dll" TaskName="CreateMergedXslt" />
+  <UsingTask AssemblyFile="ConfigZilla.Tasks.dll" TaskName="GitInfo" />
+  <UsingTask AssemblyFile="ConfigZilla.Tasks.dll" TaskName="GetTime" />
+  <UsingTask AssemblyFile="ConfigZilla.Tasks.dll" TaskName="GetElapsedTime" />
+
+
+  <!-- Import the user's customisations, if any -->
+  <Import Project="$(MSBuildProjectDirectory)\ConfigZilla.user" Condition="Exists('$(MSBuildProjectDirectory)\ConfigZilla.user')"/>
+
+
+  <PropertyGroup>
+    <!-- TODO: Default SolutionDir for builds outside Visual Studio. Needed? -->
+    <SolutionDir Condition="'$(SolutionDir)'=='' Or '$(SolutionDir)'=='*Undefined*'">..\..\</SolutionDir>
+
+    <!-- The default logging level for most messages -->
+    <czLogLevel Condition="'$(czLogLevel)'==''">normal</czLogLevel>
+
+    <!-- The name of the merged Xslt file. This will appear in the root folder of Project X. -->
+    <czMergedXsltFolder>$(MSBuildProjectDirectory)\$(BaseIntermediateOutputPath)$(Configuration)</czMergedXsltFolder>
+    <czMergedXsltFileName Condition="'$(czMergedXsltFileName)'==''">$(czMergedXsltFolder)\$(MSBuildProjectName).ConfigZilla.xslt</czMergedXsltFileName>
+    
+    <!-- The wildcard pattern specifying which MSBuild target files to import. The .targets files are used to
+         assign values to variables which will be substituted into the merged Xslt. Files will be imported both
+         from X and from the common ConfigZilla project. -->
+    <czTargetFilePattern Condition="'$(czTargetFilePattern)'==''">Transforms\**\*.targets</czTargetFilePattern>
+
+    <!-- The wildcard pattern specifying which .xslt files to merge. Files will be imported both from X
+         and from the common ConfigZilla project. -->
+    <czXsltFilePattern Condition="'$(czXsltFilePattern)'==''">Transforms\**\*.czDefaults.xslt;Transforms\**\*.$(Configuration).xslt</czXsltFilePattern>
+
+    <!-- The name of the project where we expect to find the Common transforms. -->
+    <czConfigProject Condition="'$(czConfigProject)'==''">ConfigZilla</czConfigProject>
+
+    <!-- The full path of the project where we expect to find the Common transforms. -->
+    <czConfigFolder Condition="'$(czConfigFolder)'==''">$(SolutionDir)$(czConfigProject)\</czConfigFolder>
+
+    <!-- The extension that is used to determine which files to transform. -->
+    <czInputFilePattern Condition="'$(czInputFilePattern)'==''">.template.config</czInputFilePattern>
+
+    <!-- The wildcard pattern that actually matches template files.
+         This is only evaluated in project X and by default is *.template.config located in the root ONLY.
+         Use **\*$(czInputFilePattern) to search recursively -->
+    <czTemplateFilePattern Condition="'$(czTemplateFilePattern)'==''">*$(czInputFilePattern)</czTemplateFilePattern>
+
+    <!-- Specify what the name of the file is after transformation. czInputFilePattern is replaced by this,
+         so the default is *.template.config -> *.config -->
+    <czOutputFilePattern Condition="'$(czOutputFilePattern)'==''">.config</czOutputFilePattern>
+
+    <!-- Do you want Git comments? If you have Git installed somewhere non-standard you should
+         set the property "czGitExe" in your ConfigZilla.user or your .csproj file to be the
+         full path of the git.exe file. -->
+
+    <!-- Comments to be written to the transformed files (e.g. app.config).
+         Use the special value 'none' to completely suppress a comment. 
+         czComment2 is handled in the target. -->
+    <czComment1 Condition="'$(czComment1)'==''"> Built using configuration $(Configuration) on machine $(ComputerName) by $(UserName) at $([System.DateTime]::Now.ToString("dd-MMM-yyyy HH:mm")) </czComment1>
+    <czComment3 Condition="'$(czComment3)'==''"></czComment3>
+    <czComment1 Condition="'$(czComment1)'=='none'"></czComment1>
+    <czComment3 Condition="'$(czComment3)'=='none'"></czComment3>
+  </PropertyGroup>
+
+  
+  <ItemGroup Condition="'@(czTargetFiles)'==''">
+    <!-- Get a list of all the MSBuild files to import (from this project and the ConfigZilla project). -->
+    <czTargetFiles Include="$(czConfigFolder)$(czTargetFilePattern)" />
+    <czTargetFiles Include="$(MSBuildProjectDirectory)\$(czTargetFilePattern)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'@(czXsltFiles)'==''">
+    <!-- Get a list of all the Xslt files to merge (from this project and the ConfigZilla project). -->
+    <czXsltFiles Include="$(czConfigFolder)$(czXsltFilePattern)" />
+    <czXsltFiles Include="$(MSBuildProjectDirectory)\$(czXsltFilePattern)" />
+  </ItemGroup>
+
+  <!-- Import all the .targets files we have found. This occurs recursively,
+       and allows us to evaluate all the property values in the context of X.
+       TODO: Why can't I import the item group czTargetFiles? -->
+  <Import Project="$(czConfigFolder)$(czTargetFilePattern)" />
+  <Import Project="$(MSBuildProjectDirectory)\$(czTargetFilePattern)" />
+
+
+  <!-- Build an ItemGroup of all the templates we need to process. -->
+  <ItemGroup Condition="'@(czTemplates)'==''">
+    <czTemplates Include="$(czTemplateFilePattern)" />
+  </ItemGroup>
+
+  <!-- Augment czTemplates, changing it into _czTemplates, by adding a property called OutputFile
+       to each element in the ItemGroup. OutputFile is the name of the output file that will be
+       written by the Xslt transform. 
+       TODO: Surely there is an easier way to do this without introducing a dummy ItemGroup? -->
+  <ItemGroup>
+    <_czTemplates Include="@(czTemplates)">
+      <OutputFile>$([System.String]::Copy('%(FullPath)').Replace('$(czInputFilePattern)', '$(czOutputFilePattern)'))</OutputFile>
+    </_czTemplates>
+  </ItemGroup>
+
+  <ItemGroup>
+    <czTransformedFiles Include="@(_czTemplates->'%(OutputFile)')" />
+  </ItemGroup>
+
+  
+  <ItemGroup>
+    <!-- Get a list of everything that the transformed template files depend upon; this is to enable incremental building. -->
+    <czTransformedFileDependencies Include="$(MSBuildProjectDirectory)\ConfigZilla.user" Condition="Exists('$(MSBuildProjectDirectory)\ConfigZilla.user')"/>
+    <czTransformedFileDependencies Include="$(czConfigFolder)ConfigZilla.user" Condition="Exists('$(czConfigFolder)ConfigZilla.user')"/>
+    <czTransformedFileDependencies Include="@(czTargetFiles);@(czXsltFiles)" />
+  </ItemGroup>
+
+
+
+  <!-- This target dumps all properties, handy for debugging. -->
+  <Target Name="czDump" BeforeTargets="ApplyConfigZillaXslt">
+    <Message Text="czLogLevel = $(czLogLevel)" Importance="$(czLogLevel)" />
+    <Message Text="czMergedXsltFileName = $(czMergedXsltFileName)" Importance="$(czLogLevel)" />
+    <Message Text="czTargetFilePattern = $(czTargetFilePattern)" Importance="$(czLogLevel)" />
+    <Message Text="czXsltFilePattern = $(czXsltFilePattern)" Importance="$(czLogLevel)" />
+    <Message Text="czConfigProject = $(czConfigProject)" Importance="$(czLogLevel)" />
+    <Message Text="czConfigFolder = $(czConfigFolder)" Importance="$(czLogLevel)" />
+    <Message Text="czTemplateFilePattern = $(czTemplateFilePattern)" Importance="$(czLogLevel)" />
+    <Message Text="czInputFilePattern= $(czInputFilePattern)" Importance="$(czLogLevel)" />
+    <Message Text="czOutputFilePattern = $(czOutputFilePattern)" Importance="$(czLogLevel)" />
+    <Message Text="czGitExe = $(czGitExe)" Importance="$(czLogLevel)" />
+    <Message Text="czTargetFiles = @(czTargetFiles)" Importance="$(czLogLevel)" />
+    <Message Text="czXsltFiles = @(czXsltFiles)" Importance="$(czLogLevel)" />
+    <Message Text="czTemplates = @(czTemplates)" Importance="$(czLogLevel)" />
+    <Message Text="czTransformedFiles = @(czTransformedFiles)" Importance="$(czLogLevel)" />
+    <Message Text="czTransformedFileDependencies = @(czTransformedFileDependencies)" Importance="$(czLogLevel)" />
+  </Target>
+
+  
+  
+  <!-- This target is responsible for merging all your Xslt files together into one big Xslt stylesheet,
+       performing variable substitution as it goes. The Inputs and Outputs ensure that the file is
+       only regenerated if at least one of the inputs is more recent than the merged file. -->
+  <Target Name="CreateConfigZillaXslt"
+          Condition="'@(czTemplates)'!=''"
+          Inputs="@(czTransformedFileDependencies)"
+          Outputs="$(czMergedXsltFileName)">
+
+    <GetTime>
+      <Output PropertyName="StartTime" TaskParameter="CurrentTime" />
+    </GetTime>
+
+    <!-- Run git to find out the last commit and current branch -->
+    <GitInfo GitExe="$(czGitExe)" Condition="'$(czComment2)'!='none'">
+      <Output PropertyName="Branch" TaskParameter="Branch" />
+      <Output PropertyName="LastCommitHash" TaskParameter="LastCommitHash" />
+    </GitInfo>
+
+    <PropertyGroup>
+      <czComment2 Condition="'$(czComment2)'==''"> Last Git commit was $(LastCommitHash) on branch $(Branch) </czComment2>
+      <czComment2 Condition="'$(czComment2)'=='none'"></czComment2>
+    </PropertyGroup>
+
+
+    <!-- Merge all the individual transforms into one big Xslt file.
+         This will appear in our output folder. -->
+    <CreateMergedXslt XsltFiles="@(czXsltFiles)"
+                      MergedXsltFileName="$(czMergedXsltFileName)"
+                      LogLevel="$(czLogLevel)"
+                      Comment1="$(czComment1)"
+                      Comment2="$(czComment2)"
+                      Comment3="$(czComment3)" />
+
+    <GetTime>
+      <Output PropertyName="EndTime" TaskParameter="CurrentTime" />
+    </GetTime>
+    <GetElapsedTime StartTime="$(StartTime)" EndTime="$(EndTime)">
+      <Output PropertyName="TotalSecs" TaskParameter="TotalSecs" />
+    </GetElapsedTime>
+    <!-- Log this at high importance because it is nice to always have an indication that this file was regenerated. -->
+    <Message Text="CreateConfigZillaXslt in $(MSBuildProjectName): The merged Xslt was created in $(TotalSecs) seconds at $(czMergedXsltFileName)." Importance="high" />
+  </Target>
+
+  
+
+  <!-- This target applies the Xslt transformations in the merged file to each template in the current project. -->
+  <Target Name="ApplyConfigZillaXslt" Condition="'@(czTemplates)'!='' And Exists('$(czMergedXsltFileName)')">
+    <GetTime>
+      <Output PropertyName="StartTime" TaskParameter="CurrentTime" />
+    </GetTime>
+
+    <!-- Each *.template.config in project X will be transformed into *.config. -->
+    <XslTransformation XmlInputPaths="%(_czTemplates.FullPath)"
+                       XslInputPath="$(czMergedXsltFileName)"
+                       OutputPaths="%(_czTemplates.OutputFile)"
+                       Parameters="$(czXslParameterString)"
+                       />
+
+    <GetTime>
+      <Output PropertyName="EndTime" TaskParameter="CurrentTime" />
+    </GetTime>
+    <GetElapsedTime StartTime="$(StartTime)" EndTime="$(EndTime)">
+      <Output PropertyName="TotalSecs" TaskParameter="TotalSecs" />
+    </GetElapsedTime>
+
+    <!-- Log this at high importance because it is nice to always have an indication that something got transformed. -->
+    <Message Text="ApplyConfigZillaXslt in $(MSBuildProjectName): Transformations applied in $(TotalSecs) seconds to @(czTransformedFiles)." Importance="high" />
+  </Target>
+
+
+ 
+  <!-- Cleanup the merged Xslt file when a clean is performed (see CleanDependsOn) -->
+  <Target Name="CleanUpConfigZillaXslt">
+    <Delete Files="$(czMergedXsltFileName)" />
+  </Target>
+
+
+  <PropertyGroup>
+    <BuildDependsOn>
+      CreateConfigZillaXslt;
+      ApplyConfigZillaXslt;
+      $(BuildDependsOn);
+    </BuildDependsOn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CleanDependsOn>
+      CleanUpConfigZillaXslt;
+      $(CleanDependsOn);
+    </CleanDependsOn>
+  </PropertyGroup>
+</Project>

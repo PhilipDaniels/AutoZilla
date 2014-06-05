@@ -91,6 +91,10 @@
     <None Include="App.template.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="log4net.template.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -119,6 +123,10 @@
       <Project>{0e688808-cf82-4376-85b5-e42883230455}</Project>
       <Name>AutoZilla.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ConfigZilla\ConfigZilla.csproj">
+      <Project>{93422D3E-17DB-4EF8-9027-E1FCE2735F00}</Project>
+      <Name>ConfigZilla</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -138,6 +146,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\ConfigZilla.2.0.1\build\ConfigZilla.targets" Condition="Exists('..\packages\ConfigZilla.2.0.1\build\ConfigZilla.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

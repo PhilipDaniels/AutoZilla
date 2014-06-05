@@ -1,0 +1,14 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <PropertyGroup>
+    <!-- No condition and processed first means this Property Group specifies the defaults -->
+    <appSetting1>Value1Default</appSetting1>
+    <appSetting2>Value2Default</appSetting2>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <appSetting1>Value1Release</appSetting1>
+    <appSetting2>Value2Release</appSetting2>
+  </PropertyGroup>
+  
+</Project>

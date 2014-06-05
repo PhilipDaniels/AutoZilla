@@ -1,0 +1,86 @@
+﻿Xslt Overview
+=============
+http://lenzconsulting.com/how-xslt-works/
+
+
+XPath
+=====
+XPath is how you select the elements to transform.
+
+
+/ is the root of the document
+
+
+/configuration matches <configuration> at the root, i.e. something like...
+  <xml version="1.0" encoding="utf-8" ?>
+  <configuration>
+  ...
+
+
+//foo means match foo elements anywhere in the hierarchy (and is slow).
+
+
+/configuration/appSettings|/appSettings means match appSettings under a
+<configuration> node or under the root (this happens when you use separate
+configuration files, so this construct is common place).
+
+
+/system.web/compilation/@debug means match the attribute called debug.
+
+
+/configuration/connectionStrings/add[@name='ConnStr1'] means match the "add"
+element under <connectionStrings> that has an attribute called "name" with a
+value of "ConnStr1".
+
+
+More on XPath: http://msdn.microsoft.com/en-us/library/ms256086(v=vs.85).aspx
+
+
+
+Manipulating Elements
+=====================
+<!-- Remove a specific node (element "add" with name "ConnStr1") (the template body is empty) -->
+<xsl:template match="//connectionStrings/add[@name='ConnStr1']" />
+
+
+<!-- Rewrite a specific node (element "add" with an attribute called "name" that has the
+     value "ConnStr1"). The body of the template is the Xml to be written. -->
+<xsl:template match="//connectionStrings/add[@name='ConnStr1']">
+  <add name="ConnStr1" providerName="System.Data.SqlClient" connectionString="Data Source=localhost;Initial Catalog=Db1ForDebug;Integrated Security=True;" />
+</xsl:template>
+
+
+<!-- Rewrite text within an element, given:    <someNode>OLD TEXT</someNode>
+     This template changed OLD TEXT to NEW TEXT. -->
+<xsl:template match="someNode/text()">
+  <xsl:text>NEW TEXT</xsl:text>
+</xsl:template>
+
+
+Manipulating Attributes
+=======================
+<!-- Remove an attribute called "debug" from a specific node (the template body is empty) -->
+<xsl:template match="system.web/compilation/@debug" />
+
+
+<!-- Set the "debug" attribute to "true". n.b. Single quotes in the value!!!! -->
+<xsl:template match="system.web/compilation/@debug">
+  <xsl:attribute name="debug">
+    <xsl:value-of select="'true'"/>
+  </xsl:attribute>
+</xsl:template>
+
+
+<!-- Rewrite attributes on a specific node. This changes (or adds) the "value" node on the
+     "file" node. It works by first copying all the attributes, then overriding one of them.
+  	 See http://www.w3schools.com/xpath/xpath_functions.asp for other functions you can use. -->
+<xsl:template match="/log4net/appender/file">
+  <xsl:copy>
+    <xsl:apply-templates select="@*" />
+    <xsl:attribute name="value">
+      <xsl:value-of select="concat('C:\temp\logs\', @value)"/>
+    </xsl:attribute>
+  </xsl:copy>
+</xsl:template>
+
+

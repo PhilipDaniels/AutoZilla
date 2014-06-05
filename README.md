@@ -27,6 +27,11 @@ which shows the minimum needed to register a HotKey and run a callback.
 **AutoZilla.Plugins.MSSQL** is a full-featured plugin for auto-typing MS SQL
 related text.
 
+**ConfigZilla** this is my nuget package for automatically generating
+.config files based on MSBuild settings.
+
+**MiscUtils** a git subtree linked to my MiscUtils repository.
+
 
 A note on Building
 ==================

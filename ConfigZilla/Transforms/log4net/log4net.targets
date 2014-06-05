@@ -1,0 +1,12 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- No condition and processed first means this Property Group specifies the defaults -->
+    <logInternalDebugFlag>true</logInternalDebugFlag>
+    <logDefaultLogLevel>DEBUG</logDefaultLogLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'!='Debug'">
+    <logInternalDebugFlag>false</logInternalDebugFlag>
+    <logDefaultLogLevel>INFO</logDefaultLogLevel>
+  </PropertyGroup>
+</Project>
